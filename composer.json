@@ -14,7 +14,8 @@
         "laravel/telescope": "^4.16",
         "laravel/tinker": "^2.5",
         "league/flysystem-aws-s3-v3": "*",
-        "predis/predis": "^2.2"
+        "predis/predis": "^2.2",
+        "tymon/jwt-auth": "^1.0.2"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "*",
