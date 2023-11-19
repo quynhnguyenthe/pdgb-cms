@@ -1,0 +1,65 @@
+version: '3.2'
+
+services:
+    mysql:
+        container_name: hackathon-mysql
+        image: mysql:5.7
+        command: mysqld --sql_mode=""
+        environment:
+            MYSQL_HOST: localhost
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_DATABASE: ${DB_DATABASE}
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        restart: always
+        ports:
+            - 23306:3306
+        volumes:
+            - dbdata:/var/lib/mysql
+        networks:
+            - hackathon-network
+    phpfpm:
+        container_name: hackathon-cms
+        build:
+            context: .
+            dockerfile: ./docker/Dockerfile
+        volumes:
+            - ./:/usr/share/nginx/html
+            - ./docker/nginx/app.conf:/etc/nginx/conf.d/app.conf
+            - ./docker/nginx/ssl/:/etc/nginx/ssl/
+        ports:
+            - "9890:80"
+            - "4433:443"
+        links:
+            - mysql
+            - redis
+            - hackathon-mailcatcher
+        depends_on:
+            - mysql
+            - redis
+            - hackathon-mailcatcher
+        networks:
+            - hackathon-network
+    redis:
+        image: redis:4.0
+        container_name: hackathon-app_redis
+        ports:
+            - "6382:6379"
+        networks:
+            - hackathon-network
+    hackathon-mailcatcher:
+        image: schickling/mailcatcher
+        container_name: hackathon-mailcatcher
+        ports:
+            - "1082:1080"
+            - "1025:1025"
+        networks:
+            - hackathon-network
+#Volumes
+volumes:
+    dbdata:
+        driver: local
+    ssh:
+networks:
+    hackathon-network:
+        driver: bridge
