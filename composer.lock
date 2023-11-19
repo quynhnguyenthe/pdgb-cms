@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ac9860947517be91dc105b9a3c9593dc",
+    "content-hash": "e0698e893288dd28940c947bfa0a5062",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -3119,6 +3119,79 @@
                 "source": "https://github.com/nikic/PHP-Parser/tree/v4.17.1"
             },
             "time": "2023-08-13T19:53:39+00:00"
+        },
+        {
+            "name": "ninhtqse/bruno",
+            "version": "1.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ninhtqse/bruno.git",
+                "reference": "fb9a1ae711e6c133c4218a846ff61f8bf7a37425"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ninhtqse/bruno/zipball/fb9a1ae711e6c133c4218a846ff61f8bf7a37425",
+                "reference": "fb9a1ae711e6c133c4218a846ff61f8bf7a37425",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": ">=5.4"
+            },
+            "require-dev": {
+                "ninhtqse/architect": "dev-master",
+                "satooshi/php-coveralls": "dev-master@dev"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ninhtqse\\Bruno\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "support": {
+                "issues": "https://github.com/ninhtqse/bruno/issues",
+                "source": "https://github.com/ninhtqse/bruno/tree/1.4"
+            },
+            "time": "2023-07-21T09:21:33+00:00"
+        },
+        {
+            "name": "ninhtqse/genie",
+            "version": "1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ninhtqse/genie.git",
+                "reference": "9f4eefb0daa99195e092e4ddb489ad29f5befd34"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ninhtqse/genie/zipball/9f4eefb0daa99195e092e4ddb489ad29f5befd34",
+                "reference": "9f4eefb0daa99195e092e4ddb489ad29f5befd34",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": ">=5.4"
+            },
+            "require-dev": {
+                "satooshi/php-coveralls": "dev-master@dev"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ninhtqse\\Genie\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "support": {
+                "issues": "https://github.com/ninhtqse/genie/issues",
+                "source": "https://github.com/ninhtqse/genie/tree/1.2"
+            },
+            "time": "2022-08-20T15:35:54+00:00"
         },
         {
             "name": "nyholm/psr7",
@@ -9594,6 +9667,53 @@
                 }
             ],
             "time": "2023-01-11T11:50:03+00:00"
+        },
+        {
+            "name": "theanik/laravel-more-command",
+            "version": "v1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/theanik/laravel-more-command.git",
+                "reference": "a6c4144c5ca7839cce7fd969bcffb9181c1e088e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/theanik/laravel-more-command/zipball/a6c4144c5ca7839cce7fd969bcffb9181c1e088e",
+                "reference": "a6c4144c5ca7839cce7fd969bcffb9181c1e088e",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Theanik\\LaravelMoreCommand\\LaravelMoreCommandProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Theanik\\LaravelMoreCommand\\": "src/"
+                },
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Anwar Hossain Anik",
+                    "email": "anwar.anik33@gmail.com"
+                }
+            ],
+            "description": "Create a Repository and Service class and trait using Artisan CLI",
+            "support": {
+                "issues": "https://github.com/theanik/laravel-more-command/issues",
+                "source": "https://github.com/theanik/laravel-more-command/tree/v1.3.0"
+            },
+            "time": "2022-02-21T16:53:24+00:00"
         },
         {
             "name": "theseer/tokenizer",

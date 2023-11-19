@@ -1,0 +1,103 @@
+<?php
+
+namespace App\Http\Controllers\Api\Cms;
+
+use App\Http\Controllers\Controller;
+use App\Models\Club;
+use App\Repositories\ClubSportsDisciplineRepository;
+use Illuminate\Http\Request;
+use App\Repositories\ClubRepository;
+use Illuminate\Support\Facades\DB;
+use Validator;
+
+class ClubController extends Controller
+{
+    private $clubRepository;
+    private $clubSportsDisciplineRepository;
+    /**
+     * Create a new ClubController instance.
+     *
+     * @return void
+     */
+    public function __construct(
+        ClubRepository $clubRepository,
+        ClubSportsDisciplineRepository $clubSportsDisciplineRepository
+    )
+    {
+        $this->middleware('auth:api');
+        $this->clubRepository = $clubRepository;
+        $this->clubSportsDisciplineRepository = $clubSportsDisciplineRepository;
+    }
+
+    public function getClubs(Request $request)
+    {
+        $status = null;
+        if ($request->get('status')) {
+            $status = $request->get('status');
+        }
+        $clubs = $this->clubRepository->getAllClubs($status);
+
+        return response()->json(['message' => 'success', 'data' => $clubs], 200);
+    }
+
+    public function create(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'manager_id' => 'required|integer|',
+            'number_of_members'=> 'required|integer|',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+        $status = $request->get('status') ?? Club::INACTIVE;
+        $club = [
+            'name' => $request->get('name'),
+            'manager_id' => $request->get('manager_id'),
+            'number_of_members' => $request->get('number_of_members'),
+            'status' => $status
+        ];
+        try {
+            $club = $this->clubRepository->create($club);
+        } catch (\Exception $ex) {
+            return response()->json(['error' => $ex->getMessage()], 400);
+        }
+
+
+        return response()->json(['message' => 'success', 'data' => $club], 200);
+    }
+
+    public function reviewRegistration(Request $request, int $id) {
+        $club = $this->clubRepository->getById($id);
+        if ($club) {
+            $data = ['status' => Club::ACTIVE];
+            $this->clubRepository->update($club, $data);
+        } else {
+            return response()->json(['error' => 'club not found'], 404);
+        }
+
+
+        return response()->json(['message' => 'success', 'data' => $club], 200);
+    }
+
+    public function reviewDeletion(Request $request, int $id) {
+        $club = $this->clubRepository->getById($id);
+        if ($club) {
+            DB::beginTransaction();
+            try {
+                $this->clubSportsDisciplineRepository->getModel()->where('club', $id)->delete();
+                $club->delete();
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return response()->json(['error' =>  $e->getMessage()], 400);
+            }
+        } else {
+            return response()->json(['error' => 'club not found'], 404);
+        }
+
+
+        return response()->json(['message' => 'success'], 200);
+    }
+}

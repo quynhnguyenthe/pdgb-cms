@@ -52,7 +52,6 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|confirmed|min:6',
         ]);
@@ -132,11 +131,17 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
+        if (!password_verify($request->old_password, auth()->user()->password)) {
+            return response()->json([
+                'error' => 'Unauthorized',
+            ], 401);
+        }
         $userId = auth()->user()->id;
 
         $user = User::where('id', $userId)->update(
             ['password' => bcrypt($request->new_password)]
         );
+        $this->logout();
 
         return response()->json([
             'message' => 'User successfully changed password',
