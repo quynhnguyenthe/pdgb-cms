@@ -17,7 +17,6 @@ class DatabaseSeeder extends Seeder
     {
         DB::table('users')->insert(
             [
-                'name' => 'admin',
                 'email' => env('MAIL_ADMIN', 'admin@gmail.com'),
                 'password' => bcrypt('Amela@1234'),
                 'group' => User::GROUP['admin'],
