@@ -18,7 +18,6 @@ class CreateSportsDisciplinesTable extends Migration
             $table->string('name');
             $table->integer('number_of_participants');
             $table->integer('number_of_reserves');
-            $table->timestamps();
         });
     }
 

@@ -35,7 +35,7 @@ class ClubController extends Controller
         if ($request->get('status')) {
             $status = $request->get('status');
         }
-        $clubs = $this->clubRepository->getAllClubs($status);
+        $clubs = $this->clubRepository->getAll($status);
 
         return response()->json(['message' => 'success', 'data' => $clubs], 200);
     }
@@ -44,7 +44,7 @@ class ClubController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'manager_id' => 'required|integer|',
+            'manager_id' => 'required|integer|exists:members,id',
             'number_of_members'=> 'required|integer|',
         ]);
 

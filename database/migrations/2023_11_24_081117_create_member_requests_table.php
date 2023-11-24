@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateClubMembersTable extends Migration
+class CreateMemberRequestsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,11 @@ class CreateClubMembersTable extends Migration
      */
     public function up()
     {
-        Schema::create('club_members', function (Blueprint $table) {
+        Schema::create('member_requests', function (Blueprint $table) {
             $table->id();
-            $table->integer('club');
-            $table->integer('member');
+            $table->integer('member_id');
+            $table->integer('club_id');
+            $table->integer('status');
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ class CreateClubMembersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('club_members');
+        Schema::dropIfExists('member_requests');
     }
 }

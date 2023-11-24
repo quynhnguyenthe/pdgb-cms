@@ -37,11 +37,11 @@ class ClubRequestController extends Controller
 
     public function list(Request $request)
     {
-        $query = $this->clubRequestRepository;
+        $status = null;
         if ($request->get('status')) {
-
+            $status = $request->get('status');
         }
-        $clubRequests = $query->get();
+        $clubRequests = $this->clubRequestRepository->getAll($status);
 
         return response()->json(['message' => 'success', 'data' => $clubRequests], 200);
     }
@@ -57,10 +57,11 @@ class ClubRequestController extends Controller
         }
 
         $clubRequest = $this->clubRequestRepository->getById($id);
+        $dataUpdate = [];
         if ($clubRequest) {
             if ($clubRequest['status'] == ClubRequest::NEW) {
                 $clubRequestStatus = $request->get('status');
-                $clubRequest['status'] = $clubRequestStatus;
+                $dataUpdate['status'] = $clubRequestStatus;
                 if ($clubRequestStatus == ClubRequest::APPROVE) {
                     $club = [
                         'name' => $clubRequest['club_name'],
@@ -70,10 +71,15 @@ class ClubRequestController extends Controller
                         'status' => Club::ACTIVE,
                     ];
                     $club = $this->clubRepository->create($club);
-                    $clubRequest['club_id'] = $club['id'];
+                    foreach ($clubRequest['sports_disciplines'] as $sportsDiscipline) {
+                        $sportsDisciplines = [
+                            'club_id' => $club->id,
+                            'sports_discipline_id' => $sportsDiscipline['id'],
+                        ];
+                        $this->clubSportsDisciplineRepository->create($sportsDisciplines);
+                    }
                 }
-
-                $this->clubRequestRepository->update($clubRequest, $clubRequest->toArray());
+                $this->clubRequestRepository->update($clubRequest, $dataUpdate);
             } else {
                 return response()->json(['error' => 'The request has been processed'], 403);
             }

@@ -26,5 +26,35 @@ class DatabaseSeeder extends Seeder
 
             ]
         );
+
+        DB::table('sports_disciplines')->insert(
+            [
+                [
+                    'name' => 'Bóng đá',
+                    'number_of_participants' => '14',
+                    'number_of_reserves' => '6',
+                ],
+                [
+                    'name' => 'Cầu lông',
+                    'number_of_participants' => '4',
+                    'number_of_reserves' => '0',
+                ],
+                [
+                    'name' => 'Bóng bàn',
+                    'number_of_participants' => '4',
+                    'number_of_reserves' => '2',
+                ],
+                [
+                    'name' => 'Bi-a',
+                    'number_of_participants' => '4',
+                    'number_of_reserves' => '2',
+                ],
+                [
+                    'name' => 'Bi-lắc',
+                    'number_of_participants' => '8',
+                    'number_of_reserves' => '4',
+                ],
+            ]
+        );
     }
 }

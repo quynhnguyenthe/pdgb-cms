@@ -10,4 +10,14 @@ class ClubRequestRepository extends Repository
     {
         return new ClubRequest();
     }
+
+    public function getAll($status)
+    {
+        return $this->getModel()->with('sports_disciplines')->get();
+    }
+
+    public function getById($id, array $options = [])
+    {
+        return $this->getModel()->with('sports_disciplines')->find($id);
+    }
 }
