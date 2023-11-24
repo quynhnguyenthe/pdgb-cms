@@ -15,7 +15,7 @@ class CreateClubRequestsTable extends Migration
     {
         Schema::create('club_requests', function (Blueprint $table) {
             $table->id();
-            $table->string('club_name');
+            $table->string('club_name')->nullable();
             $table->string('club_id')->nullable();
             $table->integer('type')->comment('1: Create, 2: Delete')->default(\App\Models\ClubRequest::TYPE['create']);
             $table->integer('manager_id');

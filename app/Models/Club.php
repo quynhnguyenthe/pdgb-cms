@@ -11,4 +11,19 @@ class Club extends Model
     protected $guarded = [];
     const ACTIVE = 1;
     const INACTIVE = 0;
+
+
+    public function sports_disciplines()
+    {
+        return $this->belongsToMany(SportsDiscipline::class);
+    }
+
+    public function members()
+    {
+        return $this->belongsToMany(Member::class);
+    }
+    public function teams()
+    {
+        return $this->hasMany(Team::class);
+    }
 }

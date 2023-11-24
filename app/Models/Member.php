@@ -5,9 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ClubSportsDiscipline extends Model
+class Member extends Model
 {
     use HasFactory;
-    protected $table = 'club_sports_discipline';
     protected $guarded = [];
+
+    public function memberRequests()
+    {
+        return $this->hasMany(MemberRequest::class, 'member_id');
+    }
 }

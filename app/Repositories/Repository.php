@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 use Ninhtqse\Genie\Repository as BaseRepository;
+use Symfony\Component\HttpFoundation\Exception\JsonException;
 
 abstract class Repository extends BaseRepository
 {
@@ -243,7 +244,7 @@ abstract class Repository extends BaseRepository
         $table->$tableName()->delete();
     }
 
-    public function getRequested($id)
+    public function find($id)
     {
         $row = $this->getModel()->findOrFail($id);
         if (is_null($row)) {

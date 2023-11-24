@@ -13,10 +13,10 @@ class CreateClubSportsDisciplinesTable extends Migration
      */
     public function up()
     {
-        Schema::create('club_sports_disciplines', function (Blueprint $table) {
+        Schema::create('club_sports_discipline', function (Blueprint $table) {
             $table->id();
-            $table->integer('club');
-            $table->integer('sports_discipline');
+            $table->integer('club_id');
+            $table->integer('sports_discipline_id');
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ class CreateClubSportsDisciplinesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('club_sports_disciplines');
+        Schema::dropIfExists('club_sports_discipline');
     }
 }
