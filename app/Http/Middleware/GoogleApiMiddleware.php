@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Google\Client;
 
@@ -41,6 +42,11 @@ class GoogleApiMiddleware
 
         // Add the Google_Client instance to the request
         $request->attributes->set('google_client', $client);
+
+        // Set user information in the guard
+        if (!Auth::guard('google-member')->validate(['access_token' => $bearerToken])) {
+            return response(['error' => 'Invalid Token'], 403);
+        }
 
         return $next($request);
     }

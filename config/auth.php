@@ -45,6 +45,10 @@ return [
             'provider' => 'users',
             'hash' => false,
         ],
+        'google-member' => [
+            'driver' => 'google-member',
+            'provider' => 'member',
+        ],
     ],
 
     /*
@@ -68,6 +72,10 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+        'member' => [
+            'driver' => 'member',
+            'model' => App\Models\Member::class,
         ],
 
         // 'users' => [
@@ -112,5 +120,12 @@ return [
     */
 
     'password_timeout' => 10800,
+
+    'drivers' => [
+        'google-member' => [
+            'driver' => 'token',
+            'provider' => 'google-member',
+        ],
+    ],
 
 ];
