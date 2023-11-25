@@ -9,6 +9,7 @@ use App\Repositories\ClubMemberRepository;
 use App\Repositories\ClubRepository;
 use App\Repositories\MemberRequestsRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Predis\Command\Traits\DB;
 use Validator;
@@ -32,8 +33,16 @@ class ClubController extends Controller
 
     public function list()
     {
-        $id = 1;
+        dd(Auth::user());
         $clubs = $this->clubRepository->getClubByManagerID($id);
+
+        return response()->json(['message' => 'success', 'data' => $clubs], 200);
+    }
+
+    public function listOther()
+    {
+        $id = 1;
+        $clubs = $this->clubRepository->getOtherClub($id);
 
         return response()->json(['message' => 'success', 'data' => $clubs], 200);
     }

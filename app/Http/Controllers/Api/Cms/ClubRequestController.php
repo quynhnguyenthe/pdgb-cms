@@ -58,6 +58,7 @@ class ClubRequestController extends Controller
 
         $clubRequest = $this->clubRequestRepository->getById($id);
         $dataUpdate = [];
+        $club = [];
         if ($clubRequest) {
             if ($clubRequest['status'] == ClubRequest::NEW) {
                 $clubRequestStatus = $request->get('status');
