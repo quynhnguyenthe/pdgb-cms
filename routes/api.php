@@ -52,9 +52,8 @@ Route::group([
 });
 
 Route::group([
-//    'middleware' => 'auth:api:user',
+    'middleware' => 'google.api',
     'prefix' => 'user'
-
 ], function ($router) {
 
     Route::group([
