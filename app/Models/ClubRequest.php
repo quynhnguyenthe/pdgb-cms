@@ -44,4 +44,9 @@ class ClubRequest extends Model
     {
         return $this->belongsToMany(SportsDiscipline::class);
     }
+
+    public function manager()
+    {
+        return $this->belongsTo(Member::class, 'manager_id');
+    }
 }

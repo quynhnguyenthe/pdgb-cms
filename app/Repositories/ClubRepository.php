@@ -15,6 +15,7 @@ class ClubRepository extends Repository
     public function getAll(int $status = null)
     {
         $club = $this->getModel()
+            ->with('manager')
             ->withCount('sports_disciplines')
             ->withCount('members')
             ->withCount('teams');

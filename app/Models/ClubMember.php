@@ -8,4 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ClubMember extends Model
 {
     use HasFactory;
+    protected $table = 'club_member';
+    protected $guarded = [];
+    public $timestamps = false;
 }

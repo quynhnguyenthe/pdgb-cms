@@ -8,6 +8,6 @@ class ClubMemberRepository extends Repository
 {
     public function getModel()
     {
-        new ClubMember();
+        return new ClubMember();
     }
 }

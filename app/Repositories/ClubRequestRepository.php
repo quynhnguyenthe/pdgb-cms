@@ -13,7 +13,10 @@ class ClubRequestRepository extends Repository
 
     public function getAll($status)
     {
-        return $this->getModel()->with('sports_disciplines')->get();
+        return $this->getModel()
+            ->with('sports_disciplines')
+            ->with('manager')
+            ->get();
     }
 
     public function getById($id, array $options = [])

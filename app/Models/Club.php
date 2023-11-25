@@ -26,4 +26,9 @@ class Club extends Model
     {
         return $this->hasMany(Team::class);
     }
+
+    public function manager()
+    {
+        return $this->belongsTo(Member::class, 'manager_id');
+    }
 }
