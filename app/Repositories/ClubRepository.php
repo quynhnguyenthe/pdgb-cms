@@ -42,4 +42,16 @@ class ClubRepository extends Repository
     {
         return $this->getModel()->withCount('members')->firstOrFail($id);
     }
+
+    public function getOtherClub(int $id)
+    {
+        $club = $this->getModel()
+            ->withCount('sports_disciplines')
+            ->withCount('members')
+            ->withCount('teams')
+            ->where('status', Club::ACTIVE)
+            ->where('manager_id', '!=', $id);
+
+        return $club->get();
+    }
 }

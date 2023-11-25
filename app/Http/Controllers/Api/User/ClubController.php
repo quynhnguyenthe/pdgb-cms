@@ -38,6 +38,14 @@ class ClubController extends Controller
         return response()->json(['message' => 'success', 'data' => $clubs], 200);
     }
 
+    public function listOther()
+    {
+        $id = 1;
+        $clubs = $this->clubRepository->getOtherClub($id);
+
+        return response()->json(['message' => 'success', 'data' => $clubs], 200);
+    }
+
     public function requestJoin(Request $request)
     {
         $validator = Validator::make($request->all(), [
