@@ -31,18 +31,18 @@ class ClubController extends Controller
         $this->clubMemberRepository = $clubMemberRepository;
     }
 
-    public function list()
+    public function detail()
     {
-        dd(Auth::user());
-        $clubs = $this->clubRepository->getClubByManagerID($id);
+        $user = Auth::guard('google-member')->user();
+        $clubs = $this->clubRepository->getClubByManagerID($user->id);
 
         return response()->json(['message' => 'success', 'data' => $clubs], 200);
     }
 
     public function listOther()
     {
-        $id = 1;
-        $clubs = $this->clubRepository->getOtherClub($id);
+        $user = Auth::guard('google-member')->user();
+        $clubs = $this->clubRepository->getOtherClub($user->id);
 
         return response()->json(['message' => 'success', 'data' => $clubs], 200);
     }

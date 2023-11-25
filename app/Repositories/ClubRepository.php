@@ -29,9 +29,9 @@ class ClubRepository extends Repository
     public function getClubByManagerID(int $manager_id)
     {
         $club = $this->getModel()
-            ->withCount('sports_disciplines')
-            ->withCount('members')
-            ->withCount('teams')
+            ->with('sports_disciplines')
+            ->with('members')
+            ->with('teams')
             ->where('status', Club::ACTIVE)
             ->where('manager_id', $manager_id);
 
