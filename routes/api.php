@@ -79,4 +79,11 @@ Route::group([
         Route::post('/review-request-join/{id}', [App\Http\Controllers\Api\User\ClubController::class, 'reviewRequestJoin']);
         Route::get('/list-member-request/', [App\Http\Controllers\Api\User\ClubController::class, 'listRequestJoin']);
     });
+
+    Route::group([
+        'prefix' => 'match'
+    ], function ($router) {
+        Route::post('/create', [App\Http\Controllers\Api\User\MatchController::class, 'create']);
+        Route::get('/list-pk', [App\Http\Controllers\Api\User\MatchController::class, 'listChallenge']);
+    });
 });
