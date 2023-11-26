@@ -78,6 +78,7 @@ Route::group([
         Route::post('/request-join', [App\Http\Controllers\Api\User\ClubController::class, 'requestJoin']);
         Route::post('/review-request-join/{id}', [App\Http\Controllers\Api\User\ClubController::class, 'reviewRequestJoin']);
         Route::get('/list-member-request/', [App\Http\Controllers\Api\User\ClubController::class, 'listRequestJoin']);
+        Route::get('/check', [App\Http\Controllers\Api\User\ClubController::class, 'check']);
     });
 
     Route::group([
