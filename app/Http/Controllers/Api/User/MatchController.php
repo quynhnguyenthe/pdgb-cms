@@ -67,6 +67,7 @@ class MatchController extends Controller
             'coin' => 'required|',
             'type' => 'required|',
             'challenge_club' => 'required|',
+            'member_club_id' => 'required|',
         ]);
 
         if ($validator->fails()) {
@@ -114,6 +115,14 @@ class MatchController extends Controller
                 'member_id' => $user->id
             ];
             $this->teamMemberRepository->create($teamMember);
+            $memberInClubs = $request->get('member_club_id');
+            foreach ($memberInClubs as $member_id) {
+                $teamMember = [
+                    'team_id' => $teamOne['id'],
+                    'member_id' => $member_id
+                ];
+                $this->teamMemberRepository->create($teamMember);
+            }
             $this->matchRepository->update($match, ['team_one' => $teamOne['id']]);
             DB::commit();
 
