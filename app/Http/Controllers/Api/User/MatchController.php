@@ -89,6 +89,7 @@ class MatchController extends Controller
                 'venue' => $request->get('venue'),
                 'coin' => $request->get('coin'),
                 'type' => $request->get('type'),
+                'description' => $request->get('description'),
                 'status' => Matchs::STATUS_NEW
             ];
             $match = $this->matchRepository->create($match);
@@ -113,11 +114,12 @@ class MatchController extends Controller
                 'member_id' => $user->id
             ];
             $this->teamMemberRepository->create($teamMember);
+            $this->matchRepository->update($match, ['team_one' => $teamOne['id']]);
             DB::commit();
 
             return response()->json(['message' => 'success', 'data' => $match], 200);
         } catch (\Exception $ex) {
-            dd($ex);
+            return response()->json(['error' => $ex->getMessage()], 400);
             DB::rollBack();
         }
     }
