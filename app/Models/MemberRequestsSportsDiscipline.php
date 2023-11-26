@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class MemberRequestsSportsDiscipline extends Model
 {
-    protected $table = 'member_requests_sports_discipline';
+    protected $table = 'member_request_sports_discipline';
     use HasFactory;
     protected $guarded = [];
     public $timestamps = false;
