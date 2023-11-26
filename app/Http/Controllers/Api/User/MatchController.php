@@ -3,14 +3,19 @@
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\ChallengeClub;
 use App\Models\ClubMember;
 use App\Models\Match;
+use App\Models\Matchs;
 use App\Repositories\ChallengeClubRepository;
 use App\Repositories\ClubMemberRepository;
 use App\Repositories\MatchRepository;
+use App\Repositories\TeamMemberRepository;
+use App\Repositories\TeamRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Validator;
 
 class MatchController extends Controller
 {
@@ -26,16 +31,28 @@ class MatchController extends Controller
      * @var ChallengeClubRepository
      */
     private $challengeClubRepository;
+    /**
+     * @var TeamRepository
+     */
+    private $teamRepository;
+    /**
+     * @var TeamMemberRepository
+     */
+    private $teamMemberRepository;
 
     public function __construct(
-        MatchRepository $matchRepository,
-        ClubMemberRepository $clubMemberRepository,
+        MatchRepository         $matchRepository,
+        ClubMemberRepository    $clubMemberRepository,
         ChallengeClubRepository $challengeClubRepository,
+        TeamRepository          $teamRepository,
+        TeamMemberRepository $teamMemberRepository
     )
     {
         $this->matchRepository = $matchRepository;
         $this->clubMemberRepository = $clubMemberRepository;
         $this->challengeClubRepository = $challengeClubRepository;
+        $this->teamRepository = $teamRepository;
+        $this->teamMemberRepository = $teamMemberRepository;
     }
 
     public function create(Request $request)
@@ -59,6 +76,9 @@ class MatchController extends Controller
         DB::beginTransaction();
         try {
             $clubMember = $this->clubMemberRepository->getClubByMember($user->id);
+            if (empty($clubMember)) {
+                return response()->json(['error' => 'Bạn chưa tham gia clb'], 422);
+            }
             $match = [
                 'sports_discipline_id' => $request->get('sports_discipline_id'),
                 'creator_member_id' => $user->id,
@@ -69,7 +89,7 @@ class MatchController extends Controller
                 'venue' => $request->get('venue'),
                 'coin' => $request->get('coin'),
                 'type' => $request->get('type'),
-                'status' => Match::STATUS_NEW,
+                'status' => Matchs::STATUS_NEW
             ];
             $match = $this->matchRepository->create($match);
             $challengeClubIds = $request->get('challenge_club');
@@ -77,12 +97,36 @@ class MatchController extends Controller
                 $challengeClub = [
                     'match_id' => $match['id'],
                     'club_id' => $challengeClubId,
+                    'status' => ChallengeClub::NEW
                 ];
+                $this->challengeClubRepository->create($challengeClub);
             }
-            $this->challengeClubRepository->create($challengeClub);
 
+            $teamOne = [
+                'name' => $user->name,
+                'creator_member_id' => $user->id,
+                'club_id' => $clubMember['club_id'],
+            ];
+            $teamOne = $this->teamRepository->create($teamOne);
+            $teamMember = [
+                'team_id' => $teamOne['id'],
+                'member_id' => $user->id
+            ];
+            $this->teamMemberRepository->create($teamMember);
+            DB::commit();
+
+            return response()->json(['message' => 'success', 'data' => $match], 200);
         } catch (\Exception $ex) {
+            dd($ex);
             DB::rollBack();
         }
+    }
+
+    public function listChallenge() {
+        $user = Auth::guard('google-member')->user();
+        $clubMember = $this->clubMemberRepository->getClubByMember($user->id);
+        $challenge = $this->matchRepository->getChallenges($clubMember['club_id']);
+
+        return response()->json(['message' => 'success', 'data' => $challenge], 200);
     }
 }
