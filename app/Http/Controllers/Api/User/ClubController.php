@@ -70,6 +70,17 @@ class ClubController extends Controller
         return response()->json(['message' => 'success', 'data' => $clubs], 200);
     }
 
+    public function check()
+    {
+        $user = Auth::guard('google-member')->user();
+        $check = $this->clubRepository->checkClub($user->id);
+        if ($check) {
+            return response()->json(['message' => 'success'], 200);
+        } else {
+            return response()->json(['error' => 'Tài khoản chưa tham gia clb'], 404);
+        }
+    }
+
     public function requestJoin(Request $request)
     {
         $user = Auth::guard('google-member')->user();
