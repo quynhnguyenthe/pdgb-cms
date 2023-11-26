@@ -19,7 +19,6 @@ Route::group([
     'prefix' => 'cms'
 
 ], function ($router) {
-//    Route::post('/register', [App\Http\Controllers\Api\AuthController::class, 'register']);
     Route::get('/logout', [App\Http\Controllers\Api\AuthController::class, 'logout']);
     Route::post('/refresh', [App\Http\Controllers\Api\AuthController::class, 'refresh']);
     Route::get('/user-profile', [App\Http\Controllers\Api\AuthController::class, 'userProfile']);
@@ -55,10 +54,10 @@ Route::group([
     'middleware' => 'google.api',
     'prefix' => 'user'
 ], function ($router) {
+    Route::get('/user-info', [App\Http\Controllers\Api\User\MemberController::class, 'userInfo']);
 
     Route::group([
         'prefix' => 'request'
-
     ], function ($router) {
         Route::get('/list', [App\Http\Controllers\Api\User\ClubRequestController::class, 'getClubs']);
         Route::post('/create', [App\Http\Controllers\Api\User\ClubRequestController::class, 'create']);
@@ -67,19 +66,17 @@ Route::group([
 
     Route::group([
         'prefix' => 'sport-discipline'
-
     ], function ($router) {
         Route::get('/list', [App\Http\Controllers\Api\User\SportsDisciplineController::class, 'list']);
     });
 
     Route::group([
         'prefix' => 'club'
-
     ], function ($router) {
         Route::get('/detail', [App\Http\Controllers\Api\User\ClubController::class, 'detail']);
         Route::get('/list-other', [App\Http\Controllers\Api\User\ClubController::class, 'listOther']);
         Route::post('/request-join', [App\Http\Controllers\Api\User\ClubController::class, 'requestJoin']);
         Route::post('/review-request-join/{id}', [App\Http\Controllers\Api\User\ClubController::class, 'reviewRequestJoin']);
-        Route::get('/list_member_request/{id}', [App\Http\Controllers\Api\User\ClubController::class, 'listRequestJoin']);
+        Route::get('/list-member-request/', [App\Http\Controllers\Api\User\ClubController::class, 'listRequestJoin']);
     });
 });

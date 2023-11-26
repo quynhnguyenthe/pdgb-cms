@@ -10,4 +10,14 @@ class ClubMemberRepository extends Repository
     {
         return new ClubMember();
     }
+
+    public function checkExistsClubWithMember($userId)
+    {
+        return $this->getModel()->where("member_id", $userId)->exists();
+    }
+
+    public function getClubByMember($userId)
+    {
+        return $this->getModel()->where("member_id", $userId)->get();
+    }
 }

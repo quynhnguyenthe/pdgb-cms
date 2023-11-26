@@ -5,10 +5,15 @@ namespace App\Http\Controllers\Api\User;
 use App\Http\Controllers\Controller;
 use App\Models\Club;
 use App\Models\ClubRequest;
+use App\Models\MemberRequest;
+use App\Repositories\ClubMemberRepository;
 use App\Repositories\ClubRepository;
 use App\Repositories\ClubRequestRepository;
 use App\Repositories\ClubRequestSportsDisciplineRepository;
+use App\Repositories\MemberRequestsRepository;
+use App\Repositories\MemberSportsDisciplineRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Validator;
 
@@ -17,6 +22,9 @@ class ClubRequestController extends Controller
     private $clubRequestRepository;
     private $clubRepository;
     private $clubRequestSportsDisciplineRepository;
+    private $clubMemberRepository;
+    private $memberSportsDisciplineRepository;
+    private $memberRequestRepository;
 
 
     /**
@@ -28,19 +36,23 @@ class ClubRequestController extends Controller
         ClubRequestRepository             $clubRequestRepository,
         ClubRepository                    $clubRepository,
         ClubRequestSportsDisciplineRepository $clubRequestSportsDisciplineRepository,
+        ClubMemberRepository $clubMemberRepository,
+        MemberSportsDisciplineRepository $memberSportsDisciplineRepository,
+        MemberRequestsRepository $memberRequestRepository,
     )
     {
-//        $this->middleware('auth:api');
         $this->clubRequestRepository = $clubRequestRepository;
         $this->clubRepository = $clubRepository;
         $this->clubRequestSportsDisciplineRepository = $clubRequestSportsDisciplineRepository;
+        $this->clubMemberRepository = $clubMemberRepository;
+        $this->memberSportsDisciplineRepository = $memberSportsDisciplineRepository;
+        $this->memberRequestRepository = $memberRequestRepository;
     }
 
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'club_name' => 'required',
-            'manager_id' => 'required|exists:members,id',
             'number_of_members' => 'required',
             'sports_discipline_ids' => 'required',
         ]);
@@ -48,15 +60,33 @@ class ClubRequestController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
+        $user = Auth::guard('google-member')->user();
+        $userId = $user['id'];
+        $clubMember = $this->clubMemberRepository->checkExistsClubWithMember($userId);
+        if ($clubMember) {
+            return response()->json(['error' => 'Bạn đã ở trong 1 club khác, không thể tạo club'], 422);
+        }
+
+        $clubRequestOld = $this->clubRequestRepository->getClubRquestWithMember($userId);
+        if ($clubRequestOld) {
+            return response()->json(['error' => 'Bạn đã có 1 đơn chờ duyệt'], 422);
+        }
+
+
         $clubRequestData = [
             'club_name' => $request->get('club_name'),
-            'manager_id' => $request->get('manager_id'),
+            'manager_id' => $user['id'],
             'number_of_members' => $request->get('number_of_members'),
             'description' => $request->get('description'),
             'type' => ClubRequest::TYPE['create'],
             'status' => ClubRequest::NEW,
         ];
+        DB::beginTransaction();
         try {
+            $memberRequests = $this->memberRequestRepository->getMemberRequest($userId);
+            foreach ($memberRequests as $memberRequest) {
+                $this->memberRequestRepository->update($memberRequest, ['status' => MemberRequest::CANCEL]);
+            }
             $clubRequest = $this->clubRequestRepository->create($clubRequestData);
             foreach ($request->get('sports_discipline_ids') as $sports_discipline_id) {
                 $sportsDisciplines = [
@@ -65,9 +95,10 @@ class ClubRequestController extends Controller
                     'number_of_members' => 0,
                 ];
                 $this->clubRequestSportsDisciplineRepository->create($sportsDisciplines);
-//                $clubRequest['sports_disciplines'][] = $sportsDisciplines;
             }
+            DB::commit();
         } catch (\Exception $ex) {
+            DB::rollBack();
             return response()->json(['error' => $ex->getMessage()], 400);
         }
 
@@ -85,7 +116,6 @@ class ClubRequestController extends Controller
         }
         $clubId = $request->get('club_id');
         $club = $this->clubRepository->find($clubId);
-        dd($club);
         $clubRequest = [
             'manager_id' => $request->get('manager_id'),
             'club_id' => $clubId,

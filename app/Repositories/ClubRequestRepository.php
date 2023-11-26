@@ -23,4 +23,12 @@ class ClubRequestRepository extends Repository
     {
         return $this->getModel()->with('sports_disciplines')->find($id);
     }
+
+    public function getClubRquestWithMember($userId)
+    {
+        return $this->getModel()
+            ->where("manager_id", $userId)
+            ->where('status', '=', ClubRequest::NEW)
+            ->exists();
+    }
 }
