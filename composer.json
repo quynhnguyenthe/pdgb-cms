@@ -44,6 +44,9 @@
         }
     },
     "scripts": {
+        "up": "docker-compose up -d",
+        "down": "docker-compose down",
+        "bash": "docker exec -it hackathon-cms bash",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"

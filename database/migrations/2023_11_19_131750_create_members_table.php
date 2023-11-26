@@ -19,6 +19,7 @@ class CreateMembersTable extends Migration
             $table->string('email');
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
+            $table->integer('coin')->default(0);
             $table->timestamps();
         });
     }

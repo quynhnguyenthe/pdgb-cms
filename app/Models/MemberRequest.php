@@ -14,8 +14,10 @@ class MemberRequest extends Model
     const STATUS_NAME = [
         0 => 'Mới',
         1 => 'Đã duyệt',
-        2 => 'Từ chối'
+        2 => 'Từ chối',
+        3 => 'Từ chối'
     ];
+    const CANCEL = 3;
     protected $hidden = ['updated_at'];
     protected $guarded = [];
     protected $appends = ['status_name'];
@@ -28,6 +30,11 @@ class MemberRequest extends Model
     public function members()
     {
         return $this->belongsTo(Member::class, 'member_id');
+    }
+
+    public function sports_disciplines()
+    {
+        return $this->belongsToMany(SportsDiscipline::class);
     }
 
 }

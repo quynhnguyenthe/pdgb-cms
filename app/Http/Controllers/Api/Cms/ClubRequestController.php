@@ -4,19 +4,39 @@ namespace App\Http\Controllers\Api\Cms;
 
 use App\Http\Controllers\Controller;
 use App\Models\Club;
+use App\Models\ClubMember;
 use App\Models\ClubRequest;
+use App\Repositories\ClubMemberRepository;
 use App\Repositories\ClubRepository;
 use App\Repositories\ClubRequestRepository;
 use App\Repositories\ClubSportsDisciplineRepository;
+use App\Repositories\MemberSportsDisciplineRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Validator;
 
 class ClubRequestController extends Controller
 {
+    /**
+     * @var MemberSportsDisciplineRepository
+     */
+    private $memberSportsDisciplineRepository;
+    /**
+     * @var ClubRequestRepository
+     */
     private $clubRequestRepository;
+    /**
+     * @var ClubRepository
+     */
     private $clubRepository;
+    /**
+     * @var ClubSportsDisciplineRepository
+     */
     private $clubSportsDisciplineRepository;
+    /**
+     * @var ClubMemberRepository
+     */
+    private $clubMemberRepository;
 
     /**
      * Create a new ClubRequestController instance.
@@ -26,13 +46,16 @@ class ClubRequestController extends Controller
     public function __construct(
         ClubRequestRepository          $clubRequestRepository,
         ClubRepository                 $clubRepository,
-        ClubSportsDisciplineRepository $clubSportsDisciplineRepository
+        ClubSportsDisciplineRepository $clubSportsDisciplineRepository,
+        ClubMemberRepository $clubMemberRepository,
+        MemberSportsDisciplineRepository $memberSportsDisciplineRepository,
     )
     {
-        $this->middleware('auth:api');
         $this->clubRequestRepository = $clubRequestRepository;
         $this->clubRepository = $clubRepository;
         $this->clubSportsDisciplineRepository = $clubSportsDisciplineRepository;
+        $this->clubMemberRepository = $clubMemberRepository;
+        $this->memberSportsDisciplineRepository = $memberSportsDisciplineRepository;
     }
 
     public function list(Request $request)
@@ -61,26 +84,43 @@ class ClubRequestController extends Controller
         $club = [];
         if ($clubRequest) {
             if ($clubRequest['status'] == ClubRequest::NEW) {
-                $clubRequestStatus = $request->get('status');
-                $dataUpdate['status'] = $clubRequestStatus;
-                if ($clubRequestStatus == ClubRequest::APPROVE) {
-                    $club = [
-                        'name' => $clubRequest['club_name'],
-                        'manager_id' => $clubRequest['manager_id'],
-                        'number_of_members' => $clubRequest['number_of_members'],
-                        'description' => $clubRequest['description'],
-                        'status' => Club::ACTIVE,
-                    ];
-                    $club = $this->clubRepository->create($club);
-                    foreach ($clubRequest['sports_disciplines'] as $sportsDiscipline) {
-                        $sportsDisciplines = [
-                            'club_id' => $club->id,
-                            'sports_discipline_id' => $sportsDiscipline['id'],
+                DB::beginTransaction();
+                try {
+                    $clubRequestStatus = $request->get('status');
+                    $dataUpdate['status'] = $clubRequestStatus;
+                    if ($clubRequestStatus == ClubRequest::APPROVE) {
+                        $club = [
+                            'name' => $clubRequest['club_name'],
+                            'manager_id' => $clubRequest['manager_id'],
+                            'number_of_members' => $clubRequest['number_of_members'],
+                            'description' => $clubRequest['description'],
+                            'status' => Club::ACTIVE,
                         ];
-                        $this->clubSportsDisciplineRepository->create($sportsDisciplines);
+                        $club = $this->clubRepository->create($club);
+                        $clubMember = [
+                            'club_id' => $club['id'],
+                            'member_id' => $club['manager_id']
+                        ];
+                        $this->clubMemberRepository->create($clubMember);
+                        foreach ($clubRequest['sports_disciplines'] as $sportsDiscipline) {
+                            $clubSportsDisciplines = [
+                                'club_id' => $club['id'],
+                                'sports_discipline_id' => $sportsDiscipline['id'],
+                            ];
+                            $this->clubSportsDisciplineRepository->create($clubSportsDisciplines);
+                            $memberSportsDiscipline = [
+                                'member_id' => $club['manager_id'],
+                                'sports_discipline_id' => $sportsDiscipline['id'],
+                            ];
+                            $this->memberSportsDisciplineRepository->create($memberSportsDiscipline);
+                        }
                     }
+                    $this->clubRequestRepository->update($clubRequest, $dataUpdate);
+                    DB::commit();
+                } catch (\Exception $ex) {
+                    DB::rollBack();
+                    dd($ex);
                 }
-                $this->clubRequestRepository->update($clubRequest, $dataUpdate);
             } else {
                 return response()->json(['error' => 'The request has been processed'], 403);
             }
