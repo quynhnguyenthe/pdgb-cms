@@ -20,6 +20,7 @@ class MemberUserProvider implements UserProvider
         return Member::create([
             'name' => $googleUser['name'],
             'email' => $googleUser['email'],
+            'coin' => 30,
             // Thêm các trường khác nếu cần
         ]);
     }
