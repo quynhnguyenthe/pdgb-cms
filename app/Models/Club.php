@@ -20,7 +20,8 @@ class Club extends Model
 
     public function members()
     {
-        return $this->belongsToMany(Member::class);
+        return $this->belongsToMany(Member::class)
+            ->wherePivot('club_member.member_id', '!=', 'clubs.manager_id');;
     }
     public function teams()
     {

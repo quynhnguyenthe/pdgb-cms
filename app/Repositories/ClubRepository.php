@@ -30,6 +30,7 @@ class ClubRepository extends Repository
     {
         $table = $this->getModel()->getTable();
         $club = $this->getModel()
+            ->select('clubs.*')
             ->join('club_member', "$table.id", '=', 'club_member.club_id')
             ->with('sports_disciplines')
             ->with('members')
@@ -43,7 +44,7 @@ class ClubRepository extends Repository
 
     public function getById($id, array $options = [])
     {
-        return $this->getModel()->withCount('members')->firstOrFail($id);
+        return $this->getModel()->select('clubs.*')->withCount('members')->find($id);
     }
 
     public function getOtherClub(int $id)

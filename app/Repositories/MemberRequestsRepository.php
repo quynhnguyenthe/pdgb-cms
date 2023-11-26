@@ -35,6 +35,7 @@ class MemberRequestsRepository extends Repository
     public function getRequestWithManager($userId)
     {
         return $this->getModel()
+            ->select('member_requests.*')
             ->with('members')
             ->with('sports_disciplines')
             ->join('clubs', 'clubs.id', '=', 'member_requests.club_id')
