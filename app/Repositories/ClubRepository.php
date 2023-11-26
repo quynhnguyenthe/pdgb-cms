@@ -26,14 +26,17 @@ class ClubRepository extends Repository
         return $club->get();
     }
 
-    public function getClubByManagerID(int $manager_id)
+    public function getClubByManagerID(int $user_id)
     {
+        $table = $this->getModel()->getTable();
         $club = $this->getModel()
+            ->join('club_member', "$table.id", '=', 'club_member.club_id')
             ->with('sports_disciplines')
             ->with('members')
             ->with('teams')
             ->where('status', Club::ACTIVE)
-            ->where('manager_id', $manager_id);
+            ->where('manager_id', $user_id)
+            ->orwhere('club_member.member_id', $user_id);
 
         return $club->get();
     }

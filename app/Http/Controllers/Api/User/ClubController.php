@@ -155,6 +155,7 @@ class ClubController extends Controller
 
     public function reviewRequestJoin(Request $request, int $request_id)
     {
+        $user = Auth::guard('google-member')->user();
         $requestJoin = $this->memberRequestsRepository->getById($request_id);
         $requestStatus = $request->get('status') ?? MemberRequest::APPROVE;
         if ($requestJoin && $requestJoin['status'] == MemberRequest::NEW) {
@@ -163,6 +164,9 @@ class ClubController extends Controller
                 return response()->json(['error' => 'Thành viên xin gia nhập đã tham gia vào 1 clb khác'], 422);
             }
             $club = $this->clubRepository->getById($requestJoin['club_id'])->toArray();
+            if ($club['manager_id'] != $user->id) {
+                return response()->json(['error' => 'Bạn không phải chủ club'], 422);
+            }
             if ($club['members_count'] >= $club['number_of_members']) {
                 $dataRequestJoin['status'] = $requestStatus;
                 $this->memberRequestsRepository->update($requestJoin, $dataRequestJoin);
