@@ -27,7 +27,8 @@ Route::group([
     Route::group([
         'prefix' => 'request'
     ], function ($router) {
-        Route::get('/list', [App\Http\Controllers\Api\Cms\ClubRequestController::class, 'list']);
+        Route::get('/list-create', [App\Http\Controllers\Api\Cms\ClubRequestController::class, 'listCreate']);
+        Route::get('/list-delete', [App\Http\Controllers\Api\Cms\ClubRequestController::class, 'listDelete']);
         Route::post('/review-registration/{id}', [App\Http\Controllers\Api\Cms\ClubRequestController::class, 'reviewRegistration']);
         Route::post('/review-deletion/{id}', [App\Http\Controllers\Api\Cms\ClubRequestController::class, 'reviewDeletion']);
     });

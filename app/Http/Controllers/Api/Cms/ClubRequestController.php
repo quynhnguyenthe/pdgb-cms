@@ -58,13 +58,24 @@ class ClubRequestController extends Controller
         $this->memberSportsDisciplineRepository = $memberSportsDisciplineRepository;
     }
 
-    public function list(Request $request)
+    public function listCreate(Request $request)
     {
         $status = null;
         if ($request->get('status')) {
             $status = $request->get('status');
         }
-        $clubRequests = $this->clubRequestRepository->getAll($status);
+        $clubRequests = $this->clubRequestRepository->getAll($status, ClubRequest::TYPE['create']);
+
+        return response()->json(['message' => 'success', 'data' => $clubRequests], 200);
+    }
+
+    public function listDelete(Request $request)
+    {
+        $status = null;
+        if ($request->get('status')) {
+            $status = $request->get('status');
+        }
+        $clubRequests = $this->clubRequestRepository->getAll($status, ClubRequest::TYPE['delete']);
 
         return response()->json(['message' => 'success', 'data' => $clubRequests], 200);
     }

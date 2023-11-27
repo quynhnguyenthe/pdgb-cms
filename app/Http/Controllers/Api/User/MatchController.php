@@ -7,9 +7,11 @@ use App\Models\ChallengeClub;
 use App\Models\ClubMember;
 use App\Models\Match;
 use App\Models\Matchs;
+use App\Models\TeamMatch;
 use App\Repositories\ChallengeClubRepository;
 use App\Repositories\ClubMemberRepository;
 use App\Repositories\MatchRepository;
+use App\Repositories\TeamMatchRepository;
 use App\Repositories\TeamMemberRepository;
 use App\Repositories\TeamRepository;
 use Illuminate\Http\Request;
@@ -32,9 +34,9 @@ class MatchController extends Controller
      */
     private $challengeClubRepository;
     /**
-     * @var TeamRepository
+     * @var TeamMatchRepository
      */
-    private $teamRepository;
+    private $teamMatchRepository;
     /**
      * @var TeamMemberRepository
      */
@@ -44,15 +46,13 @@ class MatchController extends Controller
         MatchRepository         $matchRepository,
         ClubMemberRepository    $clubMemberRepository,
         ChallengeClubRepository $challengeClubRepository,
-        TeamRepository          $teamRepository,
-        TeamMemberRepository $teamMemberRepository
+        TeamMatchRepository     $teamMatchRepository,
     )
     {
         $this->matchRepository = $matchRepository;
         $this->clubMemberRepository = $clubMemberRepository;
         $this->challengeClubRepository = $challengeClubRepository;
-        $this->teamRepository = $teamRepository;
-        $this->teamMemberRepository = $teamMemberRepository;
+        $this->teamMatchRepository = $teamMatchRepository;
     }
 
     public function create(Request $request)
@@ -105,25 +105,20 @@ class MatchController extends Controller
             }
 
             $teamOne = [
-                'name' => $user->name,
-                'creator_member_id' => $user->id,
-                'club_id' => $clubMember['club_id'],
+                'match_id' => $match['id'],
+                'member_id' => $user->id,
+                'type' => TeamMatch::Team_One,
             ];
-            $teamOne = $this->teamRepository->create($teamOne);
-            $teamMember = [
-                'team_id' => $teamOne['id'],
-                'member_id' => $user->id
-            ];
-            $this->teamMemberRepository->create($teamMember);
+            $this->teamMatchRepository->create($teamOne);
             $memberInClubs = $request->get('member_club_id');
             foreach ($memberInClubs as $member_id) {
-                $teamMember = [
-                    'team_id' => $teamOne['id'],
-                    'member_id' => $member_id
+                $teamOne = [
+                    'match_id' => $match['id'],
+                    'member_id' => $member_id,
+                    'type' => TeamMatch::Team_One,
                 ];
-                $this->teamMemberRepository->create($teamMember);
+                $this->teamMatchRepository->create($teamOne);
             }
-            $this->matchRepository->update($match, ['team_one' => $teamOne['id']]);
             DB::commit();
 
             return response()->json(['message' => 'success', 'data' => $match], 200);
@@ -133,7 +128,8 @@ class MatchController extends Controller
         }
     }
 
-    public function listChallenge() {
+    public function listChallenge()
+    {
         $user = Auth::guard('google-member')->user();
         $clubMember = $this->clubMemberRepository->getClubByMember($user->id);
         $challenge = $this->matchRepository->getChallenges($clubMember['club_id']);

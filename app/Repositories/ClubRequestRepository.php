@@ -11,12 +11,17 @@ class ClubRequestRepository extends Repository
         return new ClubRequest();
     }
 
-    public function getAll($status)
+    public function getAll($status, $type)
     {
-        return $this->getModel()
+        $qb = $this->getModel()
             ->with('sports_disciplines')
             ->with('manager')
-            ->get();
+            ->where('type', $type);
+        if ($status) {
+            $qb->where('status', $status);
+        }
+
+        return $qb->get();
     }
 
     public function getById($id, array $options = [])
