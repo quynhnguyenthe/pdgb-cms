@@ -33,6 +33,7 @@ class ClubRepository extends Repository
         $club = $this->getModel()
             ->select('clubs.*')
             ->join('club_member', "$table.id", '=', 'club_member.club_id')
+            ->with('manager')
             ->with('sports_disciplines')
             ->with(['members' => function ($query) use ($user_id) {
                 $query->where('members.id', '!=', $user_id);
