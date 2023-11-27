@@ -10,9 +10,9 @@ class ChallengeClub extends Model
     use HasFactory;
     protected $guarded = [];
     public $timestamps = false;
-    const APPROVE = 1;
-    const REJECT = 2;
-    const NEW = 0;
+    const NEW = 1;
+    const APPROVE = 2;
+    const REJECT = 3;
 
     public function matchs(){
         return $this->hasOne(Matchs::class, 'id', 'match_id');

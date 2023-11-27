@@ -10,7 +10,7 @@ class Club extends Model
     use HasFactory;
     protected $guarded = [];
     const ACTIVE = 1;
-    const INACTIVE = 0;
+    const INACTIVE = 2;
 
 
     public function sports_disciplines()

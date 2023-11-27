@@ -8,18 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class ClubRequest extends Model
 {
     use HasFactory;
-
-    const APPROVE = 1;
-    const REJECT = 2;
-    const NEW = 0;
+    const NEW = 1;
+    const APPROVE = 2;
+    const REJECT = 3;
     const TYPE = [
         'create' => 1,
         'delete' => 2,
     ];
     const STATUS_NAME = [
-        0 => 'Mới',
-        1 => 'Đã duyệt',
-        2 => 'Từ chối'
+        1 => 'Mới',
+        2 => 'Đã duyệt',
+        3 => 'Từ chối'
     ];
 
     const TYPE_NAME = [

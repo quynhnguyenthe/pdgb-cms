@@ -12,16 +12,16 @@ class Matchs extends Model
 
     protected $guarded = [];
 
-    const STATUS_NEW = 0;
-    const STATUS_IN_DUE = 1;
-    const STATUS_DONE = 2;
-    const STATUS_REJECT = 3;
+    const STATUS_NEW = 1;
+    const STATUS_IN_DUE = 2;
+    const STATUS_DONE = 3;
+    const STATUS_REJECT = 4;
 
     const STATUS_NAME = [
-        0 => 'Mới',
-        1 => 'Đang thi đấu',
-        2 => 'Đã xong',
-        3 => 'Bị từ chối',
+        1 => 'Mới',
+        2 => 'Đang thi đấu',
+        3 => 'Đã xong',
+        4 => 'Bị từ chối',
     ];
 
     protected $appends = ['status_name'];
