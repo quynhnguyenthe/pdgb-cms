@@ -7,6 +7,7 @@ use App\Models\Club;
 use App\Repositories\ClubSportsDisciplineRepository;
 use Illuminate\Http\Request;
 use App\Repositories\ClubRepository;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Validator;
 
@@ -99,5 +100,12 @@ class ClubController extends Controller
 
 
         return response()->json(['message' => 'success'], 200);
+    }
+
+    public function detail(int $club_id)
+    {
+        $clubs = $this->clubRepository->getClubByID($club_id);
+
+        return response()->json(['message' => 'success', 'data' => $clubs], 200);
     }
 }

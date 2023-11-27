@@ -47,6 +47,20 @@ class ClubRepository extends Repository
         return $club->get();
     }
 
+    public function getClubByID(int $club_id)
+    {
+        $club = $this->getModel()
+            ->select('clubs.*')
+            ->with('manager')
+            ->with('sports_disciplines')
+            ->with('teams')
+            ->with('members')
+            ->where('status', Club::ACTIVE)
+            ->where('id', $club_id);
+
+        return $club->first();
+    }
+
     public function getById($id, array $options = [])
     {
         return $this->getModel()->select('clubs.*')->withCount('members')->find($id);

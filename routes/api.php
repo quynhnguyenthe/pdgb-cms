@@ -37,6 +37,7 @@ Route::group([
         'prefix' => 'club'
     ], function ($router) {
         Route::get('/list', [App\Http\Controllers\Api\Cms\ClubController::class, 'getClubs']);
+        Route::get('/detail/{id}', [App\Http\Controllers\Api\Cms\ClubController::class, 'detail']);
         Route::post('/create', [App\Http\Controllers\Api\Cms\ClubController::class, 'create']);
         Route::post('/refresh', [App\Http\Controllers\Api\Cms\ClubController::class, 'refresh']);
         Route::post('/change-pass', [App\Http\Controllers\Api\Cms\ClubController::class, 'changePassWord']);
