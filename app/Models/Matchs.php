@@ -21,7 +21,7 @@ class Matchs extends Model
         1 => 'Mới',
         2 => 'Đang thi đấu',
         3 => 'Đã xong',
-        4 => 'Bị từ chối',
+        4 => 'Huỷ',
     ];
     protected $hidden = ['team_one', 'team_two'];
 
@@ -46,5 +46,9 @@ class Matchs extends Model
     }
     public function team_twos(){
         return $this->belongsToMany(Member::class, 'team_matches', 'match_id', 'member_id')->where('type', TeamMatch::Team_Two);
+    }
+
+    public function challenge_clubs() {
+        return $this->belongsToMany(Club::class, 'challenge_clubs', 'match_id', 'club_id');
     }
 }

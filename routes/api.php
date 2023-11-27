@@ -94,6 +94,7 @@ Route::group([
         'prefix' => 'match'
     ], function ($router) {
         Route::post('/create', [App\Http\Controllers\Api\User\MatchController::class, 'create']);
-        Route::get('/list-pk', [App\Http\Controllers\Api\User\MatchController::class, 'listChallenge']);
+        Route::get('/list-pk', [App\Http\Controllers\Api\User\MatchController::class, 'listPK']);
+        Route::get('/list-match', [App\Http\Controllers\Api\User\MatchController::class, 'listMatch']);
     });
 });

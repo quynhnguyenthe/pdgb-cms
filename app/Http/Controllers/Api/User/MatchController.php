@@ -128,12 +128,24 @@ class MatchController extends Controller
         }
     }
 
-    public function listChallenge()
+    public function listPK()
     {
         $user = Auth::guard('google-member')->user();
         $clubMember = $this->clubMemberRepository->getClubByMember($user->id);
-        $challenge = $this->matchRepository->getChallenges($clubMember['club_id']);
+        if ($clubMember) {
+            $listPK = $this->matchRepository->getListPK($clubMember['club_id']);
 
-        return response()->json(['message' => 'success', 'data' => $challenge], 200);
+            return response()->json(['message' => 'success', 'data' => $listPK], 200);
+        }
+
+        return response()->json(['message' => 'success', 'data' => []], 200);
+    }
+
+    public function listMatch()
+    {
+        $user = Auth::guard('google-member')->user();
+        $matches = $this->matchRepository->getListMatch($user->id);
+
+        return response()->json(['message' => 'success', 'data' => $matches], 200);
     }
 }

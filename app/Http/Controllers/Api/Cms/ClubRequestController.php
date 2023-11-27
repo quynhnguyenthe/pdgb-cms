@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Club;
 use App\Models\ClubMember;
 use App\Models\ClubRequest;
+use App\Repositories\ChallengeClubRepository;
 use App\Repositories\ClubMemberRepository;
 use App\Repositories\ClubRepository;
 use App\Repositories\ClubRequestRepository;
@@ -37,6 +38,10 @@ class ClubRequestController extends Controller
      * @var ClubMemberRepository
      */
     private $clubMemberRepository;
+    /**
+     * @var ChallengeClubRepository
+     */
+    private $challengeClubRepository;
 
     /**
      * Create a new ClubRequestController instance.
@@ -49,6 +54,7 @@ class ClubRequestController extends Controller
         ClubSportsDisciplineRepository $clubSportsDisciplineRepository,
         ClubMemberRepository $clubMemberRepository,
         MemberSportsDisciplineRepository $memberSportsDisciplineRepository,
+        ChallengeClubRepository $challengeClubRepository,
     )
     {
         $this->clubRequestRepository = $clubRequestRepository;
@@ -56,6 +62,7 @@ class ClubRequestController extends Controller
         $this->clubSportsDisciplineRepository = $clubSportsDisciplineRepository;
         $this->clubMemberRepository = $clubMemberRepository;
         $this->memberSportsDisciplineRepository = $memberSportsDisciplineRepository;
+        $this->challengeClubRepository = $challengeClubRepository;
     }
 
     public function listCreate(Request $request)
@@ -153,6 +160,8 @@ class ClubRequestController extends Controller
                     try {
                         $this->clubSportsDisciplineRepository->getModel()->where('club_id', $club['id'])->delete();
                         $this->clubMemberRepository->getModel()->where('club_id', $club['id'])->delete();
+                        $this->clubMemberRepository->getModel()->where('club_id', $club['id'])->delete();
+                        $this->challengeClubRepository->getModel()->where('club_id', $club['id'])->delete();
                         $club->delete();
                     DB::commit();
                 } catch (\Exception $e) {

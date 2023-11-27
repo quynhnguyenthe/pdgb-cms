@@ -18,7 +18,7 @@ class ClubMemberRepository extends Repository
 
     public function getClubByMember($userId)
     {
-        return $this->getModel()->where("member_id", $userId)->firstOrFail();
+        return $this->getModel()->where("member_id", $userId)->first();
     }
 
     public function getByClub($clubId)

@@ -69,39 +69,6 @@ class ClubController extends Controller
         return response()->json(['message' => 'success', 'data' => $club], 200);
     }
 
-    public function reviewRegistration(Request $request, int $id) {
-        $club = $this->clubRepository->getById($id);
-        if ($club) {
-            $data = ['status' => Club::ACTIVE];
-            $this->clubRepository->update($club, $data);
-        } else {
-            return response()->json(['error' => 'club not found'], 404);
-        }
-
-
-        return response()->json(['message' => 'success', 'data' => $club], 200);
-    }
-
-    public function reviewDeletion(Request $request, int $id) {
-        $club = $this->clubRepository->getById($id);
-        if ($club) {
-            DB::beginTransaction();
-            try {
-                $this->clubSportsDisciplineRepository->getModel()->where('club', $id)->delete();
-                $club->delete();
-                DB::commit();
-            } catch (\Exception $e) {
-                DB::rollBack();
-                return response()->json(['error' =>  $e->getMessage()], 400);
-            }
-        } else {
-            return response()->json(['error' => 'club not found'], 404);
-        }
-
-
-        return response()->json(['message' => 'success'], 200);
-    }
-
     public function detail(int $club_id)
     {
         $clubs = $this->clubRepository->getClubByID($club_id);
