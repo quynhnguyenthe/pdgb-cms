@@ -42,9 +42,9 @@ class Matchs extends Model
     }
 
     public function team_ones(){
-        return $this->belongsToMany(Member::class, 'team_matchs', 'match_id', 'member_id')->where('type', TeamMatch::Team_One);
+        return $this->belongsToMany(Member::class, 'team_matches', 'match_id', 'member_id')->where('type', TeamMatch::Team_One);
     }
     public function team_twos(){
-        return $this->belongsToMany(Member::class, 'team_matchs', 'match_id', 'member_id')->where('type', TeamMatch::Team_Two);
+        return $this->belongsToMany(Member::class, 'team_matches', 'match_id', 'member_id')->where('type', TeamMatch::Team_Two);
     }
 }

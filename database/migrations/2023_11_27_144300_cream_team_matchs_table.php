@@ -13,7 +13,7 @@ class CreamTeamMatchsTable extends Migration
      */
     public function up()
     {
-        Schema::create('team_matchs', function (Blueprint $table) {
+        Schema::create('team_matches', function (Blueprint $table) {
             $table->id();
             $table->integer('match_id');
             $table->integer('type');
@@ -28,6 +28,6 @@ class CreamTeamMatchsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('team_matchs');
+        Schema::dropIfExists('team_matches');
     }
 }
