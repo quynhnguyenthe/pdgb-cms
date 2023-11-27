@@ -50,6 +50,13 @@ Route::group([
         Route::post('/create', [App\Http\Controllers\Api\Cms\MemberController::class, 'create']);
         Route::get('/detail/{id}', [App\Http\Controllers\Api\Cms\MemberController::class, 'detail']);
     });
+
+    Route::group([
+        'prefix' => 'match'
+    ], function ($router) {
+        Route::get('/list', [App\Http\Controllers\Api\Cms\MatchController::class, 'list']);
+    });
+
 });
 
 Route::group([

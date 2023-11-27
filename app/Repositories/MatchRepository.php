@@ -20,4 +20,17 @@ class MatchRepository extends Repository
             ->where('challenge_clubs.club_id', $club_id)
             ->get();
     }
+
+    public function getAll()
+    {
+        return $this->getModel()
+            ->select('matchs.*')
+            ->selectRaw("DATE_ADD(CONCAT(match_date, ' ', match_time), INTERVAL duration_minutes MINUTE) AS match_end_date")
+            ->with('sports_discipline')
+            ->with('creator_member')
+            ->with('recipient_member')
+            ->with('team_ones')
+            ->with('team_twos')
+            ->get();
+    }
 }

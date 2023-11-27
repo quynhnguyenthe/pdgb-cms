@@ -23,10 +23,28 @@ class Matchs extends Model
         3 => 'Đã xong',
         4 => 'Bị từ chối',
     ];
+    protected $hidden = ['team_one', 'team_two'];
 
     protected $appends = ['status_name'];
 
     public function getStatusNameAttribute() {
         return self::STATUS_NAME[$this->attributes['status']];
+    }
+
+    public function sports_discipline(){
+        return $this->hasOne(SportsDiscipline::class, 'id', 'sports_discipline_id');
+    }
+    public function creator_member(){
+        return $this->hasOne(Member::class, 'id', 'creator_member_id');
+    }
+    public function recipient_member(){
+        return $this->hasOne(Member::class, 'id', 'recipient_member_id');
+    }
+
+    public function team_ones(){
+        return $this->belongsToMany(Member::class, 'team_matchs', 'match_id', 'member_id')->where('type', TeamMatch::Team_One);
+    }
+    public function team_twos(){
+        return $this->belongsToMany(Member::class, 'team_matchs', 'match_id', 'member_id')->where('type', TeamMatch::Team_Two);
     }
 }
