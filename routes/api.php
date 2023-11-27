@@ -60,7 +60,6 @@ Route::group([
     Route::group([
         'prefix' => 'request'
     ], function ($router) {
-        Route::get('/list', [App\Http\Controllers\Api\User\ClubRequestController::class, 'getClubs']);
         Route::post('/create', [App\Http\Controllers\Api\User\ClubRequestController::class, 'create']);
         Route::post('/delete', [App\Http\Controllers\Api\User\ClubRequestController::class, 'delete']);
     });

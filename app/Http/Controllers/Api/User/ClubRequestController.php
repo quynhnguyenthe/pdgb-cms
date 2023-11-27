@@ -106,26 +106,24 @@ class ClubRequestController extends Controller
     }
     public function delete(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'club_id' => 'required',
-            'manager_id' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+        $user = Auth::guard('google-member')->user();
+        $userId = $user['id'];
+        $club = $this->clubRepository->getClubByManagerID($userId)->toArray();
+        if (empty($club)) {
+            return response()->json(['error' => 'Bạn chưa phải người tạo clb'], 422);
         }
-        $clubId = $request->get('club_id');
-        $club = $this->clubRepository->find($clubId);
+
         $clubRequest = [
-            'manager_id' => $request->get('manager_id'),
-            'club_id' => $clubId,
-            'description' => $request->get('description'),
+            'manager_id' => $userId,
+            'club_id' => $club[0]['id'],
+            'club_name' => $club[0]['name'],
+            'number_of_members' => $club[0]['number_of_members'],
+            'description' => $request->get('description') ?? '',
             'type' => ClubRequest::TYPE['delete'],
             'status' => ClubRequest::NEW,
         ];
         try {
             $clubRequestId = $this->clubRequestRepository->create($clubRequest);
-            $clubRequest['id'] = $clubRequestId;
         } catch (\Exception $ex) {
             return response()->json(['error' => $ex->getMessage()], 400);
         }

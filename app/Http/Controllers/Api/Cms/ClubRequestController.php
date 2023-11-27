@@ -130,7 +130,6 @@ class ClubRequestController extends Controller
                     DB::commit();
                 } catch (\Exception $ex) {
                     DB::rollBack();
-                    dd($ex);
                 }
             } else {
                 return response()->json(['error' => 'The request has been processed'], 403);
@@ -147,16 +146,21 @@ class ClubRequestController extends Controller
         $clubRequest = $this->clubRequestRepository->getById($id);
         if ($clubRequest) {
             if ($clubRequest['status'] == ClubRequest::NEW) {
-                $club = $this->clubRepository->getById($clubRequest['club_id']);
-                DB::beginTransaction();
-                try {
-                    $this->clubSportsDisciplineRepository->getModel()->where('club', $id)->delete();
-                    $club->delete();
+                $statusClubRequest = $request->get('status');
+                if ($statusClubRequest == ClubRequest::APPROVE)  {
+                    $club = $this->clubRepository->getById($clubRequest['club_id']);
+                    DB::beginTransaction();
+                    try {
+                        $this->clubSportsDisciplineRepository->getModel()->where('club_id', $club['id'])->delete();
+                        $this->clubMemberRepository->getModel()->where('club_id', $club['id'])->delete();
+                        $club->delete();
                     DB::commit();
                 } catch (\Exception $e) {
-                    DB::rollBack();
-                    return response()->json(['error' => $e->getMessage()], 400);
+                        DB::rollBack();
+                        return response()->json(['error' => $e->getMessage()], 400);
+                    }
                 }
+                $this->clubSportsDisciplineRepository->update($clubRequest, ['status' => $statusClubRequest]);
             } else {
                 return response()->json(['error' => 'The request has been processed'], 403);
             }

@@ -41,7 +41,8 @@ class ClubRepository extends Repository
             ->with('teams')
             ->where('status', Club::ACTIVE)
             ->where('manager_id', $user_id)
-            ->orwhere('club_member.member_id', $user_id);
+            ->orwhere('club_member.member_id', $user_id)
+            ->groupBy('clubs.id');
 
         return $club->get();
     }
