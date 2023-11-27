@@ -15,7 +15,7 @@ class MemberRequest extends Model
         0 => 'Mới',
         1 => 'Đã duyệt',
         2 => 'Từ chối',
-        3 => 'Từ chối'
+        3 => 'Huỷ'
     ];
     const CANCEL = 3;
     protected $hidden = ['updated_at'];

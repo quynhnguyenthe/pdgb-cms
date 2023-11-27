@@ -51,11 +51,17 @@ class ClubRepository extends Repository
 
     public function getOtherClub(int $id)
     {
+        $tableName = $this->getModel()->getTable();
         $club = $this->getModel()
+            ->select("$tableName.*", 'member_requests.status as request_join_status')
             ->with('sports_disciplines')
             ->with('members')
             ->with('teams')
-            ->where('status', Club::ACTIVE)
+            ->leftJoin('member_requests', function ($join) use ($tableName, $id) {
+                $join->on("$tableName.id", '=', 'member_requests.club_id')
+                    ->where('member_requests.member_id', '=', $id);
+            })
+            ->where("$tableName.status", Club::ACTIVE)
             ->where('manager_id', '!=', $id);
 
         return $club->get();
