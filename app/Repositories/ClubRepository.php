@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Club;
+use App\Models\MemberRequest;
 use Illuminate\Support\Facades\DB;
 
 class ClubRepository extends Repository
@@ -53,13 +54,14 @@ class ClubRepository extends Repository
     {
         $tableName = $this->getModel()->getTable();
         $club = $this->getModel()
-            ->select("$tableName.*", 'member_requests.status as request_join_status')
+            ->select("$tableName.*", 'member_requests.status as request_join_status', 'member_requests.id as request_id')
             ->with('sports_disciplines')
             ->with('members')
             ->with('teams')
             ->leftJoin('member_requests', function ($join) use ($tableName, $id) {
                 $join->on("$tableName.id", '=', 'member_requests.club_id')
-                    ->where('member_requests.member_id', '=', $id);
+                    ->where('member_requests.member_id', '=', $id)
+                    ->whereIn('member_requests.status', [MemberRequest::NEW, MemberRequest::APPROVE]);
             })
             ->where("$tableName.status", Club::ACTIVE)
             ->where('manager_id', '!=', $id);
