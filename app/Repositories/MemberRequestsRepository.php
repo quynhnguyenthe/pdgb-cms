@@ -40,6 +40,7 @@ class MemberRequestsRepository extends Repository
             ->with('sports_disciplines')
             ->join('clubs', 'clubs.id', '=', 'member_requests.club_id')
             ->where('clubs.manager_id', $userId)
+            ->where('member_requests.status', MemberRequest::NEW)
             ->get();
     }
 }

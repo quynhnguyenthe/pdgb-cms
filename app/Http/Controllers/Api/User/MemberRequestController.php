@@ -126,7 +126,7 @@ class MemberRequestController extends Controller
     public function reviewRequestJoin(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'request_id' => 'required|exists:clubs,id',
+            'request_id' => 'required|exists:member_requests,id',
         ]);
 
         if ($validator->fails()) {

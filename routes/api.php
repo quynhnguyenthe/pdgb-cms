@@ -97,6 +97,6 @@ Route::group([
         Route::get('/list-pk', [App\Http\Controllers\Api\User\MatchController::class, 'listPK']);
         Route::get('/list-match', [App\Http\Controllers\Api\User\MatchController::class, 'listMatch']);
         Route::post('/reply-pk/{id}', [App\Http\Controllers\Api\User\MatchController::class, 'replyPK']);
-        Route::post('/in-due', [App\Http\Controllers\Api\User\MatchController::class, 'getInDue']);
+        Route::get('/in-due', [App\Http\Controllers\Api\User\MatchController::class, 'getInDue']);
     });
 });
