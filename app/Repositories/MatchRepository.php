@@ -17,6 +17,7 @@ class MatchRepository extends Repository
         return $this->getModel()
             ->select('matches.*')
             ->join('challenge_clubs', 'challenge_clubs.match_id', '=', "$tableName.id")
+            ->with('sports_discipline')
             ->with('creator_member')
             ->with('recipient_member')
             ->with('team_ones')
