@@ -65,4 +65,21 @@ class MatchRepository extends Repository
             ->groupBy('matches.id')
             ->exists();
     }
+
+    public function getInDueWithUser($user_id)
+    {
+        $tableName = $this->getModel()->getTable();
+        return $this->getModel()
+            ->select('matches.*')
+            ->join('team_matches', 'team_matches.match_id', '=', "$tableName.id")
+            ->with('sports_discipline')
+            ->with('creator_member')
+            ->with('recipient_member')
+            ->with('team_ones')
+            ->with('team_twos')
+            ->where('team_matches.member_id', $user_id)
+            ->where('matches.status', Matches::STATUS_IN_DUE)
+            ->groupBy('matches.id')
+            ->first();
+    }
 }

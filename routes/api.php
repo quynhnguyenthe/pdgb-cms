@@ -84,7 +84,7 @@ Route::group([
         Route::get('/detail', [App\Http\Controllers\Api\User\ClubController::class, 'detail']);
         Route::get('/list-other', [App\Http\Controllers\Api\User\ClubController::class, 'listOther']);
         Route::post('/request-join', [App\Http\Controllers\Api\User\MemberRequestController::class, 'requestJoin']);
-        Route::post('/review-request-join/{id}', [App\Http\Controllers\Api\User\MemberRequestController::class, 'reviewRequestJoin']);
+        Route::post('/review-request-join', [App\Http\Controllers\Api\User\MemberRequestController::class, 'reviewRequestJoin']);
         Route::get('/list-member-request/', [App\Http\Controllers\Api\User\MemberRequestController::class, 'listRequestJoin']);
         Route::post('/cancel-request-join/{id}', [App\Http\Controllers\Api\User\MemberRequestController::class, 'cancelRequestJoin']);
         Route::get('/check', [App\Http\Controllers\Api\User\ClubController::class, 'check']);
@@ -97,5 +97,6 @@ Route::group([
         Route::get('/list-pk', [App\Http\Controllers\Api\User\MatchController::class, 'listPK']);
         Route::get('/list-match', [App\Http\Controllers\Api\User\MatchController::class, 'listMatch']);
         Route::post('/reply-pk/{id}', [App\Http\Controllers\Api\User\MatchController::class, 'replyPK']);
+        Route::post('/in-due', [App\Http\Controllers\Api\User\MatchController::class, 'getInDue']);
     });
 });

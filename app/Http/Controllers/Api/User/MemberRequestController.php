@@ -123,8 +123,17 @@ class MemberRequestController extends Controller
         return response()->json(['message' => 'success', 'data' => $requests], 200);
     }
 
-    public function reviewRequestJoin(Request $request, int $requestId)
+    public function reviewRequestJoin(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'request_id' => 'required|exists:clubs,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $requestId = $request->get('request_id');
         $user = Auth::guard('google-member')->user();
         $requestJoin = $this->memberRequestsRepository->getById($requestId);
         $requestStatus = $request->get('status') ?? MemberRequest::APPROVE;

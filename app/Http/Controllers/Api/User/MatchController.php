@@ -209,6 +209,12 @@ class MatchController extends Controller
             DB::rollBack();
             return response()->json(['error' => $ex->getMessage()], 400);
         }
+    }
 
+    public function getInDue() {
+        $user = Auth::guard('google-member')->user();
+        $match = $this->matchRepository->getInDueWithUser($user->id);
+
+        return response()->json(['message' => 'success', 'data' => $match], 200);
     }
 }
