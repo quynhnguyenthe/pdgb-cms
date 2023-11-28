@@ -20,9 +20,10 @@ class Matches extends Model
 
     const STATUS_NAME = [
         1 => 'Mới',
-        2 => 'Đang thi đấu',
-        3 => 'Đã xong',
-        4 => 'Huỷ',
+        2 => 'Đã chấp nhận',
+        3 => 'Đang diễn ra',
+        4 => 'Đã xong',
+        5 => 'Huỷ',
     ];
     protected $hidden = ['team_one', 'team_two'];
 
