@@ -22,6 +22,7 @@ class CreateMatchesTable extends Migration
             $table->date('match_date');
             $table->time('match_time');
             $table->integer('duration_minutes');
+            $table->dateTime('match_end_date');
             $table->string('venue');
             $table->integer('coin');
             $table->string('description')->nullable();
