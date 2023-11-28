@@ -10,5 +10,9 @@ class SportsDiscipline extends Model
     use HasFactory;
     protected $table = 'sports_disciplines';
     public $timestamps = false;
-    protected $hidden = ['created_at', 'updated_at'];
+    protected $hidden = ['created_at', 'updated_at', 'pivot'];
+
+    public function members() {
+        return $this->hasMany(Member::class, 'id', 'member_id');
+    }
 }

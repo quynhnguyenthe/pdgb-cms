@@ -29,20 +29,30 @@ class ClubRepository extends Repository
 
     public function getClubByManagerID(int $user_id)
     {
-        $table = $this->getModel()->getTable();
+        $club_id = $this->getModel()
+            ->select('clubs.id')
+            ->join('club_member', "clubs.id", '=', 'club_member.club_id')
+            ->where('status', Club::ACTIVE)
+            ->where('manager_id', $user_id)
+            ->orwhere('club_member.member_id', $user_id)
+            ->groupBy('clubs.id')
+            ->first()['id'];
+
         $club = $this->getModel()
             ->select('clubs.*')
-            ->join('club_member', "$table.id", '=', 'club_member.club_id')
             ->with('manager')
-            ->with('sports_disciplines')
+            ->with(['sports_disciplines' => function ($query) use ($club_id) {
+                $query->selectRaw('sports_disciplines.id,sports_disciplines.name')
+                    ->selectRaw("(SELECT COUNT(1) FROM member_sports_discipline msd 
+                    WHERE msd.sports_discipline_id = sports_disciplines.id
+                    AND msd.member_id IN (SELECT member_id FROM club_member WHERE club_id = $club_id)
+                    ) as number_of_members");
+            }])
             ->with(['members' => function ($query) use ($user_id) {
                 $query->where('members.id', '!=', $user_id);
             }])
             ->with('teams')
-            ->where('status', Club::ACTIVE)
-            ->where('manager_id', $user_id)
-            ->orwhere('club_member.member_id', $user_id)
-            ->groupBy('clubs.id');
+            ->where('id', $club_id);
 
         return $club->get();
     }
