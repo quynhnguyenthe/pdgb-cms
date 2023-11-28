@@ -43,8 +43,8 @@ class MatchController extends Controller
 
     public function list()
     {
-        $matchs = $this->matchRepository->getAll();
+        $matches = $this->matchRepository->getAll();
 
-        return response()->json(['message' => 'success', 'data' => $matchs], 200);
+        return response()->json(['message' => 'success', 'data' => $matches], 200);
     }
 }

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ChallengeClub;
 use App\Models\ClubMember;
 use App\Models\Match;
-use App\Models\Matchs;
+use App\Models\Matches;
 use App\Models\TeamMatch;
 use App\Repositories\ChallengeClubRepository;
 use App\Repositories\ClubMemberRepository;
@@ -91,7 +91,7 @@ class MatchController extends Controller
                 'coin' => $request->get('coin'),
                 'type' => $request->get('type'),
                 'description' => $request->get('description'),
-                'status' => Matchs::STATUS_NEW
+                'status' => Matches::STATUS_NEW
             ];
             $match = $this->matchRepository->create($match);
             $challengeClubIds = $request->get('challenge_club');
@@ -147,5 +147,68 @@ class MatchController extends Controller
         $matches = $this->matchRepository->getListMatch($user->id);
 
         return response()->json(['message' => 'success', 'data' => $matches], 200);
+    }
+
+    public function replyPK(Request $request, int $match_id)
+    {
+        $validator = Validator::make($request->all(), [
+            'status' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $match = $this->matchRepository->getById($match_id);
+        if (!$match || $match['status'] != Matches::STATUS_NEW) {
+            return response()->json(['error' => 'Trận đấu không tồn tại hoặc đã diễn ra'], 422);
+        }
+        $user = Auth::guard('google-member')->user();
+        $clubMember = $this->clubMemberRepository->getClubByMember($user->id);
+        $checkMatch = $this->matchRepository->checkMatchWithClub($clubMember['club_id'], $match_id);
+        if (!$checkMatch) {
+            return response()->json(['error' => 'CLB của bạn không có vé mời tham dự trận đấu này'], 422);
+        }
+
+        $listMemberIds = $request->get('member_ids') ?? [];
+        $statusReply = $request->get('status');
+        DB::beginTransaction();
+        try {
+            if ($statusReply == ChallengeClub::APPROVE) {
+                $teamOne = [
+                    'match_id' => $match_id,
+                    'member_id' => $user->id,
+                    'type' => TeamMatch::Team_Two,
+                ];
+                $this->teamMatchRepository->create($teamOne);
+                foreach ($listMemberIds as $member_id) {
+                    $teamOne = [
+                        'match_id' => $match_id,
+                        'member_id' => $member_id,
+                        'type' => TeamMatch::Team_Two,
+                    ];
+                    $this->teamMatchRepository->create($teamOne);
+                }
+                $this->matchRepository->update($match, ['status' => Matches::STATUS_ACCEPTED]);
+                $challengeClub = $this->challengeClubRepository->getChallengeWithMatchAndClub($clubMember['club_id'], $match_id);
+                $this->challengeClubRepository->update($challengeClub, ['status' => ChallengeClub::APPROVE]);
+                $otherChallengeClubs = $this->challengeClubRepository->getOtherChallengeMatchWithClub($clubMember['club_id'], $match_id);
+                foreach ($otherChallengeClubs as $otherChallengeClub) {
+                    $this->challengeClubRepository->update($otherChallengeClub, ['status' => ChallengeClub::REJECT]);
+                }
+            } else {
+                $challengeClub = $this->challengeClubRepository->getChallengeWithMatchAndClub($clubMember['club_id'], $match_id);
+                $this->challengeClubRepository->update($challengeClub, ['status' => ChallengeClub::REJECT]);
+                $checkRejectMatch = $this->challengeClubRepository->getRejectWithMatch($match_id);
+                if ($checkRejectMatch == 0) {
+                    $this->matchRepository->update($match, ['status' => Matches::STATUS_REJECT]);
+                }
+            }
+            DB::commit();
+            return response()->json(['message' => 'success'], 200);
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            return response()->json(['error' => $ex->getMessage()], 400);
+        }
+
     }
 }

@@ -96,5 +96,6 @@ Route::group([
         Route::post('/create', [App\Http\Controllers\Api\User\MatchController::class, 'create']);
         Route::get('/list-pk', [App\Http\Controllers\Api\User\MatchController::class, 'listPK']);
         Route::get('/list-match', [App\Http\Controllers\Api\User\MatchController::class, 'listMatch']);
+        Route::post('/reply-pk/{id}', [App\Http\Controllers\Api\User\MatchController::class, 'replyPK']);
     });
 });

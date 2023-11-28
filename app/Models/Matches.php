@@ -5,17 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Matchs extends Model
+class Matches extends Model
 {
-    protected $table = 'matchs';
+    protected $table = 'matches';
     use HasFactory;
 
     protected $guarded = [];
 
     const STATUS_NEW = 1;
-    const STATUS_IN_DUE = 2;
-    const STATUS_DONE = 3;
-    const STATUS_REJECT = 4;
+    const STATUS_ACCEPTED = 2;
+    const STATUS_IN_DUE = 3;
+    const STATUS_DONE = 4;
+    const STATUS_REJECT = 5;
 
     const STATUS_NAME = [
         1 => 'Mới',

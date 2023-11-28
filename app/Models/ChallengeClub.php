@@ -14,7 +14,7 @@ class ChallengeClub extends Model
     const APPROVE = 2;
     const REJECT = 3;
 
-    public function matchs(){
-        return $this->hasOne(Matchs::class, 'id', 'match_id');
+    public function matches(){
+        return $this->hasOne(Matches::class, 'id', 'match_id');
     }
 }
