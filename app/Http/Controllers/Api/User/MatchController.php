@@ -219,4 +219,20 @@ class MatchController extends Controller
 
         return response()->json(['message' => 'success', 'data' => $match], 200);
     }
+
+    public function listAllMatch(Request $request)
+    {
+        $user = Auth::guard('google-member')->user();
+        $otherUserId = $request->get('user_id') ?? '';
+        $matches = $this->matchRepository->getListAllMatch($user->id, $otherUserId);
+
+        return response()->json(['message' => 'success', 'data' => $matches], 200);
+    }
+
+    public function detail(Request $request, int $id)
+    {
+        $match = $this->matchRepository->detail($id);
+
+        return response()->json(['message' => 'success', 'data' => $match], 200);
+    }
 }

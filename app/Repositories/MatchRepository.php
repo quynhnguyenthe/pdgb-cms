@@ -31,7 +31,6 @@ class MatchRepository extends Repository
     {
         return $this->getModel()
             ->select('matches.*')
-            ->selectRaw("DATE_ADD(CONCAT(match_date, ' ', match_time), INTERVAL duration_minutes MINUTE) AS match_end_date")
             ->with('sports_discipline')
             ->with('creator_member')
             ->with('recipient_member')
@@ -43,7 +42,6 @@ class MatchRepository extends Repository
     {
         return $this->getModel()
             ->select('matches.*')
-            ->selectRaw("DATE_ADD(CONCAT(match_date, ' ', match_time), INTERVAL duration_minutes MINUTE) AS match_end_date")
             ->with('sports_discipline')
             ->with('creator_member')
             ->with('recipient_member')
@@ -80,6 +78,37 @@ class MatchRepository extends Repository
             ->where('team_matches.member_id', $user_id)
             ->where('matches.status', Matches::STATUS_IN_DUE)
             ->groupBy('matches.id')
+            ->first();
+    }
+
+    public function getListAllMatch($user_id, $otherUserId)
+    {
+
+        $qb = $this->getModel()
+            ->select('matches.*')
+            ->join('team_matches', 'team_matches.match_id', 'matches.id');
+        if ($otherUserId > 0) {
+            $user_id = $otherUserId;
+            $qb->where('matches.type', Matches::PUBLIC);
+        }
+        $qb->where('matches.creator_member_id', $user_id)
+            ->orWhere('team_matches.member_id', $user_id);
+        $qb->where('matches.status', Matches::STATUS_REJECT);
+
+        return $qb->get();
+    }
+
+    public function detail($match_id)
+    {
+        return $this->getModel()
+            ->select('matches.*')
+            ->with('sports_discipline')
+            ->with('creator_member')
+            ->with('recipient_member')
+            ->with('team_ones')
+            ->with('team_twos')
+            ->with('challenge_clubs')
+            ->where('matches.id', $match_id)
             ->first();
     }
 }

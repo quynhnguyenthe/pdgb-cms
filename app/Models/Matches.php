@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Matches extends Model
 {
+    const PUBLIC = 1;
+    const PRIVATE = 2;
     protected $table = 'matches';
     use HasFactory;
 
