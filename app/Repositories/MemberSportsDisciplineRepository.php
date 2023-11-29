@@ -23,4 +23,9 @@ class MemberSportsDisciplineRepository extends Repository
 
         return parent::create($data);
     }
+
+    public function getByMember($merber_id)
+    {
+        return $this->getModel()->where('member_id', $merber_id)->get();
+    }
 }

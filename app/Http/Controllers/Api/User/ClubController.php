@@ -202,4 +202,43 @@ class ClubController extends Controller
             return response()->json(['error' => 'Đơn không tồn tại hoặc đã được duyệt'], 400);
         }
     }
+
+    public function kickMember(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'member_id' => 'required|exists:members,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+        $user = Auth::guard('google-member')->user();
+
+        $club = $this->clubRepository->getClubByManagerID($user->id)->toArray();
+        $merber_id = $request->get('member_id');
+        $clubMember = $this->clubMemberRepository->getClubByMember($merber_id);
+        if (empty($club)) {
+            return response()->json(['error' => 'Bạn không phải chủ club'], 422);
+        }
+
+        if (empty($clubMember) || $club[0]['id'] != $clubMember['club_id']) {
+            return response()->json(['error' => 'Thành viên không có trong club'], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            $this->clubMemberRepository->find($clubMember['id'])->delete();
+            $memberSportDisciplines = $this->memberSportsDisciplineRepository->getByMember($merber_id);
+            foreach ($memberSportDisciplines as $memberSportDiscipline) {
+                $memberSportDiscipline->delete();
+            }
+            DB::commit();
+        } catch (\Exception $ex) {
+            return response()->json(['error' => $ex->getMessage()], 400);
+            DB::rollBack();
+        }
+
+
+        return response()->json(['message' => 'success'], 200);
+    }
 }

@@ -88,6 +88,7 @@ Route::group([
         Route::get('/list-member-request/', [App\Http\Controllers\Api\User\MemberRequestController::class, 'listRequestJoin']);
         Route::post('/cancel-request-join/{id}', [App\Http\Controllers\Api\User\MemberRequestController::class, 'cancelRequestJoin']);
         Route::get('/check', [App\Http\Controllers\Api\User\ClubController::class, 'check']);
+        Route::post('/kick-member', [App\Http\Controllers\Api\User\ClubController::class, 'kickMember']);
     });
 
     Route::group([
