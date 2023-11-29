@@ -99,6 +99,7 @@ class MatchRepository extends Repository
         $qb->where('matches.creator_member_id', $user_id)
             ->orWhere('team_matches.member_id', $user_id);
         $qb->where('matches.status', Matches::STATUS_REJECT);
+        $qb->groupBy('matches.id');
 
         return $qb->get();
     }
