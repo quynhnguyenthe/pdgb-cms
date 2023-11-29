@@ -62,4 +62,8 @@ class Matches extends Model
     public function challenge_clubs() {
         return $this->belongsToMany(Club::class, 'challenge_clubs', 'match_id', 'club_id');
     }
+
+    public function result() {
+        return $this->hasOne(MatchResult::class, 'match_id', 'id');
+    }
 }

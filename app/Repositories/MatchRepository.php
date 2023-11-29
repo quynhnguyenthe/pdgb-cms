@@ -30,6 +30,7 @@ class MatchRepository extends Repository
             ->with('recipient_member')
             ->with('team_ones')
             ->with('team_twos')
+            ->with('result')
             ->where('challenge_clubs.club_id', $club_id)
             ->groupBy('matches.id')
             ->get();
@@ -43,6 +44,7 @@ class MatchRepository extends Repository
             ->with('creator_member')
             ->with('recipient_member')
             ->with('team_ones')
+            ->with('result')
             ->with('team_twos')
             ->get();
     }
@@ -56,6 +58,7 @@ class MatchRepository extends Repository
             ->with('team_ones')
             ->with('team_twos')
             ->with('challenge_clubs')
+            ->with('result')
             ->where('matches.creator_member_id', $user_id)
             ->get();
     }
@@ -83,6 +86,7 @@ class MatchRepository extends Repository
             ->with('recipient_member')
             ->with('team_ones')
             ->with('team_twos')
+            ->with('result')
             ->where('team_matches.member_id', $user_id)
             ->where('matches.status', Matches::STATUS_IN_DUE)
             ->groupBy('matches.id')
@@ -100,6 +104,7 @@ class MatchRepository extends Repository
             ->with('recipient_member')
             ->with('team_ones')
             ->with('team_twos')
+            ->with('result')
             ->where('team_matches.member_id', $user_id)
             ->where('matches.status', Matches::WAIT_RESULT)
             ->groupBy('matches.id')
@@ -116,6 +121,7 @@ class MatchRepository extends Repository
             ->with('recipient_member')
             ->with('team_ones')
             ->with('team_twos')
+            ->with('result')
             ->join('team_matches', 'team_matches.match_id', 'matches.id');
         if ($otherUserId > 0) {
             $user_id = $otherUserId;
@@ -139,6 +145,7 @@ class MatchRepository extends Repository
             ->with('team_ones')
             ->with('team_twos')
             ->with('challenge_clubs')
+            ->with('result')
             ->where('matches.id', $match_id)
             ->first();
     }
