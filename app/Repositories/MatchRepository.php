@@ -86,6 +86,11 @@ class MatchRepository extends Repository
 
         $qb = $this->getModel()
             ->select('matches.*')
+            ->with('sports_discipline')
+            ->with('creator_member')
+            ->with('recipient_member')
+            ->with('team_ones')
+            ->with('team_twos')
             ->join('team_matches', 'team_matches.match_id', 'matches.id');
         if ($otherUserId > 0) {
             $user_id = $otherUserId;
