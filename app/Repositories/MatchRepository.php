@@ -33,6 +33,7 @@ class MatchRepository extends Repository
             ->with('result')
             ->where('challenge_clubs.club_id', $club_id)
             ->groupBy('matches.id')
+            ->orderBy('matches.id', 'DESC')
             ->get();
     }
 
@@ -46,6 +47,7 @@ class MatchRepository extends Repository
             ->with('team_ones')
             ->with('result')
             ->with('team_twos')
+            ->orderBy('matches.id', 'DESC')
             ->get();
     }
     public function getListMatch($user_id)
@@ -60,6 +62,7 @@ class MatchRepository extends Repository
             ->with('challenge_clubs')
             ->with('result')
             ->where('matches.creator_member_id', $user_id)
+            ->orderBy('matches.id', 'DESC')
             ->get();
     }
 
@@ -72,6 +75,7 @@ class MatchRepository extends Repository
             ->where('challenge_clubs.club_id', $club_id)
             ->where('matches.id', $match_id)
             ->groupBy('matches.id')
+            ->orderBy('matches.id', 'DESC')
             ->exists();
     }
 
@@ -90,6 +94,7 @@ class MatchRepository extends Repository
             ->where('team_matches.member_id', $user_id)
             ->where('matches.status', Matches::STATUS_IN_DUE)
             ->groupBy('matches.id')
+            ->orderBy('matches.id', 'DESC')
             ->first();
     }
 
@@ -108,6 +113,7 @@ class MatchRepository extends Repository
             ->where('team_matches.member_id', $user_id)
             ->where('matches.status', Matches::WAIT_RESULT)
             ->groupBy('matches.id')
+            ->orderBy('matches.id', 'DESC')
             ->first();
     }
 
@@ -130,6 +136,7 @@ class MatchRepository extends Repository
         $qb->where('matches.creator_member_id', $user_id)
             ->orWhere('team_matches.member_id', $user_id);
         $qb->whereIn('matches.status', [Matches::STATUS_ACCEPTED, Matches::STATUS_IN_DUE,Matches::WAIT_RESULT,Matches::STATUS_DONE]);
+        $qb->orderBy('matches.id', 'DESC');
         $qb->groupBy('matches.id');
 
         return $qb->get();
@@ -147,6 +154,7 @@ class MatchRepository extends Repository
             ->with('challenge_clubs')
             ->with('result')
             ->where('matches.id', $match_id)
+            ->orderBy('matches.id', 'DESC')
             ->first();
     }
 }

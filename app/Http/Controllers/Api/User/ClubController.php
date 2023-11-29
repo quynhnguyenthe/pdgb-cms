@@ -241,4 +241,28 @@ class ClubController extends Controller
 
         return response()->json(['message' => 'success'], 200);
     }
+
+    public function listMemberWithSport(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'sports_discipline_id' => 'required|exists:sports_disciplines,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $user = Auth::guard('google-member')->user();
+        $clubMember = $this->clubMemberRepository->getClubByMember($user->id);
+        $memberClubs = $this->clubMemberRepository->getByClub($clubMember['club_id']);
+        $listMemberIdsInClub = [];
+        foreach ($memberClubs as $memberInClub) {
+            if ($memberInClub['member_id'] != $user->id) {
+                $listMemberIdsInClub[] = $memberInClub['member_id'];
+            }
+        }
+        $sportsDisciplineId = $request->get('sports_discipline_id');
+        $listMemberSports = $this->memberSportsDisciplineRepository->getMemberInClubWithSports($sportsDisciplineId, $listMemberIdsInClub);
+
+        return response()->json(['message' => 'success', 'data' => $listMemberSports], 200);
+    }
 }

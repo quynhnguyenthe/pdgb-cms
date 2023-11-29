@@ -28,4 +28,13 @@ class MemberSportsDisciplineRepository extends Repository
     {
         return $this->getModel()->where('member_id', $merber_id)->get();
     }
+
+    public function getMemberInClubWithSports($sportsDisciplineId, $listMemberIdsInClub)
+    {
+        return $this->getModel()
+            ->with('members')
+            ->where('sports_discipline_id', $sportsDisciplineId)
+            ->whereIn('member_id', $listMemberIdsInClub)
+            ->get();
+    }
 }

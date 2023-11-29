@@ -11,4 +11,7 @@ class MemberSportsDiscipline extends Model
     use HasFactory;
     protected $guarded = [];
     public $timestamps = false;
+    public function members() {
+        return $this->hasOne(Member::class, 'id', 'member_id');
+    }
 }
