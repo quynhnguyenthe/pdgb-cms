@@ -80,7 +80,8 @@ class MatchController extends Controller
             if (empty($clubMember)) {
                 return response()->json(['error' => 'Bạn chưa tham gia clb'], 422);
             }
-            $match_end_date = (strtotime($request->get('match_date') . ' '. $request->get('match_time') * $request->get('duration_minutes')*60*1000));
+            $match_end_date = (strtotime($request->get('match_date') . ' '. $request->get('match_time'))) + ($request->get('duration_minutes')*60);
+            $match_end_date = date('Y-m-d H:i:s', $match_end_date);
             $match = [
                 'sports_discipline_id' => $request->get('sports_discipline_id'),
                 'creator_member_id' => $user->id,
