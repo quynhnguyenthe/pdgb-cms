@@ -7,10 +7,12 @@ use App\Models\ChallengeClub;
 use App\Models\ClubMember;
 use App\Models\Match;
 use App\Models\Matches;
+use App\Models\MatchResult;
 use App\Models\TeamMatch;
 use App\Repositories\ChallengeClubRepository;
 use App\Repositories\ClubMemberRepository;
 use App\Repositories\MatchRepository;
+use App\Repositories\MatchResultRepository;
 use App\Repositories\TeamMatchRepository;
 use App\Repositories\TeamMemberRepository;
 use App\Repositories\TeamRepository;
@@ -41,18 +43,24 @@ class MatchController extends Controller
      * @var TeamMemberRepository
      */
     private $teamMemberRepository;
+    /**
+     * @var MatchResultRepository
+     */
+    private $matchResultRepository;
 
     public function __construct(
         MatchRepository         $matchRepository,
         ClubMemberRepository    $clubMemberRepository,
         ChallengeClubRepository $challengeClubRepository,
         TeamMatchRepository     $teamMatchRepository,
+        MatchResultRepository   $matchResultRepository,
     )
     {
         $this->matchRepository = $matchRepository;
         $this->clubMemberRepository = $clubMemberRepository;
         $this->challengeClubRepository = $challengeClubRepository;
         $this->teamMatchRepository = $teamMatchRepository;
+        $this->matchResultRepository = $matchResultRepository;
     }
 
     public function create(Request $request)
@@ -221,6 +229,13 @@ class MatchController extends Controller
         return response()->json(['message' => 'success', 'data' => $match], 200);
     }
 
+    public function getWaitForResult() {
+        $user = Auth::guard('google-member')->user();
+        $match = $this->matchRepository->getWaitForResult($user->id);
+
+        return response()->json(['message' => 'success', 'data' => $match], 200);
+    }
+
     public function listAllMatch(Request $request)
     {
         $user = Auth::guard('google-member')->user();
@@ -236,4 +251,113 @@ class MatchController extends Controller
 
         return response()->json(['message' => 'success', 'data' => $match], 200);
     }
+
+    public function updateResult(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'match_id' => 'required|exists:matches,id',
+            'win_or_lose' => 'required',
+            'result' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+        $user = Auth::guard('google-member')->user();
+
+        $match_id = $request->get('match_id');
+        $matchResult = DB::table('match_results')->where('match_id', $match_id)->get();
+        if (!empty($matchResult)) {
+            return response()->json(['error' => 'Trận đấu đã được cập nhật kết quả'], 422);
+        }
+        $match = $this->matchRepository->getById($match_id);
+        $checkMatch = false;
+        $memberTeam = TeamMatch::Team_One;
+
+        foreach ($match['members'] as $member) {
+            if ($member['id'] == $user->id) {
+                $memberTeam = $member['team_type'];
+                $checkMatch = true;
+                break;
+            }
+        }
+        $opponentTeam = ($memberTeam == TeamMatch::Team_One) ? TeamMatch::Team_Two : TeamMatch::Team_One;
+        if (!$checkMatch) {
+            return response()->json(['error' => 'Bạn không phải thành viên trong trận này'], 422);
+        }
+
+        if ($match['status'] != Matches::WAIT_RESULT) {
+            return response()->json(['error' => 'Trận đấu chưa diễn ra không thể cập nhật kết quả'], 422);
+        }
+        try {
+            DB::beginTransaction();
+            $winOrLose = $request->get('win_or_lose');
+            if ($winOrLose == MatchResult::WIN) {
+                $winTeam = $memberTeam;
+                $loseTeam = $opponentTeam;
+            } else {
+                $winTeam = $opponentTeam;
+                $loseTeam = $memberTeam;
+            }
+            $dataMatchResult = [
+                'match_id' => $match_id,
+                'creator_id' => $user->id,
+                'win_team_id' => $winTeam,
+                'lose_team_id' => $loseTeam,
+                'result' => $request->get('result'),
+            ];
+            $matchResultModel = new MatchResult();
+            $matchResultModel->fill($dataMatchResult);
+            $matchResultModel->save();
+            $this->matchRepository->update($match, ['status' => Matches::WAIT_RESULT]);
+            DB::commit();
+        } catch (\Exception $ex) {
+            return response()->json(['error' => $ex->getMessage()], 400);
+            DB::rollBack();
+        }
+
+        return response()->json(['message' => 'success', 'data' => $matchResultModel], 200);
+    }
+
+    public function acceptResult(Request $request, int $id) {
+        $user = Auth::guard('google-member')->user();
+
+        $matchResult = $this->matchResultRepository->find($id);
+        if (empty($matchResult)) {
+            return response()->json(['error' => 'Không tìm thấy trận đấu'], 422);
+        }
+        $match = $this->matchRepository->getById($matchResult->match_id);
+
+        $checkMatch = false;
+        $memberTeam = TeamMatch::Team_One;
+        foreach ($match['members'] as $member) {
+            if ($member['id'] == $user->id) {
+                $memberTeam = $member['team_type'];
+                $checkMatch = true;
+            }
+            if ($member['id'] == $matchResult->creator_id) {
+                $opponentTeam = $member['team_type'];
+            }
+        }
+        if ($memberTeam == $opponentTeam) {
+            return response()->json(['error' => 'Bạn không thể cập nhật kết quả trận đấu do đội mình tạo'], 422);
+        }
+        if (!$checkMatch) {
+            return response()->json(['error' => 'Bạn không phải thành viên trong trận này'], 422);
+        }
+        if ($match['status'] != Matches::WAIT_RESULT) {
+            return response()->json(['error' => 'Trận đấu chưa diễn ra không thể cập nhật kết quả'], 422);
+        }
+        try {
+            DB::beginTransaction();
+            $matchResultData['acceptor_id'] = $user->id;
+            $matchResult = $this->matchRepository->update($matchResult, $matchResultData);
+            $this->matchRepository->update($match, ['status' => Matches::STATUS_DONE]);
+            DB::commit();
+        } catch (\Exception $ex) {
+            return response()->json(['error' => $ex->getMessage()], 400);
+            DB::rollBack();
+        }
+
+        return response()->json(['message' => 'success', 'data' => $matchResult], 200);
+    }
+
 }

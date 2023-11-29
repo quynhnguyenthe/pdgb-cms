@@ -17,10 +17,11 @@ class CreateMatchResultsTable extends Migration
             $table->id();
             $table->integer('match_id');
             $table->integer('creator_id');
-            $table->integer('acceptor_id');
+            $table->integer('acceptor_id')->nullable();
             $table->integer('win_team_id');
             $table->integer('lose_team_id');
             $table->string('result');
+            $table->integer('status');
             $table->timestamps();
         });
     }

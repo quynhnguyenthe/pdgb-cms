@@ -83,6 +83,7 @@ class ClubRepository extends Repository
             ->select("$tableName.*", 'member_requests.status as request_join_status', 'member_requests.id as request_id')
             ->with('sports_disciplines')
             ->with('members')
+            ->with('manager')
             ->with('teams')
             ->leftJoin('member_requests', function ($join) use ($tableName, $id) {
                 $join->on("$tableName.id", '=', 'member_requests.club_id')

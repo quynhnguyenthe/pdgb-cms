@@ -17,15 +17,17 @@ class Matches extends Model
     const STATUS_NEW = 1;
     const STATUS_ACCEPTED = 2;
     const STATUS_IN_DUE = 3;
-    const STATUS_DONE = 4;
-    const STATUS_REJECT = 5;
+    const WAIT_RESULT = 4;
+    const STATUS_DONE = 5;
+    const STATUS_REJECT = 6;
 
     const STATUS_NAME = [
         1 => 'Mới',
         2 => 'Đã chấp nhận',
         3 => 'Đang diễn ra',
-        4 => 'Đã xong',
-        5 => 'Huỷ',
+        4 => 'Chờ kết quả',
+        5 => 'Đã xong',
+        6 => 'Huỷ',
     ];
     protected $hidden = ['team_one', 'team_two'];
 
@@ -45,6 +47,11 @@ class Matches extends Model
         return $this->hasOne(Member::class, 'id', 'recipient_member_id');
     }
 
+    public function members(){
+        return $this->belongsToMany(Member::class, 'team_matches', 'match_id', 'member_id')
+            ->addSelect('team_matches.type as team_type')
+            ->addSelect('members.*');
+    }
     public function team_ones(){
         return $this->belongsToMany(Member::class, 'team_matches', 'match_id', 'member_id')->where('type', TeamMatch::Team_One);
     }

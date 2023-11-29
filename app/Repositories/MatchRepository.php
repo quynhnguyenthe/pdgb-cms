@@ -11,6 +11,14 @@ class MatchRepository extends Repository
         return new Matches();
     }
 
+    public function getById($id, array $options = [])
+    {
+        return $this->getModel()
+            ->with('members')
+            ->where('id', $id)
+            ->first();
+    }
+
     public function getListPK($club_id)
     {
         $tableName = $this->getModel()->getTable();
@@ -81,6 +89,23 @@ class MatchRepository extends Repository
             ->first();
     }
 
+    public function getWaitForResult($user_id)
+    {
+        $tableName = $this->getModel()->getTable();
+        return $this->getModel()
+            ->select('matches.*')
+            ->join('team_matches', 'team_matches.match_id', '=', "$tableName.id")
+            ->with('sports_discipline')
+            ->with('creator_member')
+            ->with('recipient_member')
+            ->with('team_ones')
+            ->with('team_twos')
+            ->where('team_matches.member_id', $user_id)
+            ->where('matches.status', Matches::WAIT_RESULT)
+            ->groupBy('matches.id')
+            ->first();
+    }
+
     public function getListAllMatch($user_id, $otherUserId)
     {
 
@@ -98,7 +123,7 @@ class MatchRepository extends Repository
         }
         $qb->where('matches.creator_member_id', $user_id)
             ->orWhere('team_matches.member_id', $user_id);
-        $qb->where('matches.status', Matches::STATUS_REJECT);
+        $qb->whereIn('matches.status', [Matches::STATUS_ACCEPTED, Matches::STATUS_IN_DUE,Matches::WAIT_RESULT,Matches::STATUS_DONE]);
         $qb->groupBy('matches.id');
 
         return $qb->get();

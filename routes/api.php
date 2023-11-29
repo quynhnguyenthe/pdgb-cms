@@ -99,7 +99,10 @@ Route::group([
         Route::get('/list-match', [App\Http\Controllers\Api\User\MatchController::class, 'listMatch']);
         Route::post('/reply-pk/{id}', [App\Http\Controllers\Api\User\MatchController::class, 'replyPK']);
         Route::get('/in-due', [App\Http\Controllers\Api\User\MatchController::class, 'getInDue']);
+        Route::get('/wait-for-result', [App\Http\Controllers\Api\User\MatchController::class, 'getWaitForResult']);
         Route::get('/list-all-match', [App\Http\Controllers\Api\User\MatchController::class, 'listAllMatch']);
         Route::get('/detail/{id}', [App\Http\Controllers\Api\User\MatchController::class, 'detail']);
+        Route::post('/update-result', [App\Http\Controllers\Api\User\MatchController::class, 'updateResult']);
+        Route::post('/accept-result/{id}', [App\Http\Controllers\Api\User\MatchController::class, 'acceptResult']);
     });
 });
