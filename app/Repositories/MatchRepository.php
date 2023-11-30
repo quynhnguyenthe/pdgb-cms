@@ -33,7 +33,6 @@ class MatchRepository extends Repository
             ->with('team_twos')
             ->with('result')
             ->where('challenge_clubs.club_id', $club_id)
-            ->where('challenge_clubs.status', ChallengeClub::NEW)
             ->orderBy('matches.id', 'DESC')
             ->get();
     }
