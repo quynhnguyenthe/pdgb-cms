@@ -114,7 +114,7 @@ class MatchRepository extends Repository
             ->where('matches.status', Matches::WAIT_RESULT)
             ->groupBy('matches.id')
             ->orderBy('matches.id', 'DESC')
-            ->first();
+            ->get();
     }
 
     public function getListAllMatch($user_id, $otherUserId)
