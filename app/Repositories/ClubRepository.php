@@ -91,8 +91,7 @@ class ClubRepository extends Repository
                     ->whereIn('member_requests.status', [MemberRequest::NEW, MemberRequest::APPROVE]);
             })
             ->where("$tableName.status", Club::ACTIVE)
-            ->where('manager_id', '!=', $id)
-            ->groupBy('clubs.id');
+            ->where('manager_id', '!=', $id);
 
         return $club->get();
     }
