@@ -79,17 +79,18 @@ class ClubRepository extends Repository
     public function getOtherClub(int $id)
     {
         $tableName = $this->getModel()->getTable();
+        $memberStatus =  [MemberRequest::NEW, MemberRequest::APPROVE];
+        $memberStatus = implode(",", $memberStatus);
         $club = $this->getModel()
-            ->select("$tableName.*", 'member_requests.status as request_join_status', 'member_requests.id as request_id')
+            ->select("$tableName.*")
+            ->selectRaw("(SELECT status FROM member_requests WHERE $tableName.id = member_requests.club_id 
+            AND member_requests.member_id=$id AND member_requests.status IN ($memberStatus)) as request_join_status")
+            ->selectRaw("(SELECT id FROM member_requests WHERE $tableName.id = member_requests.club_id 
+            AND member_requests.member_id=$id AND member_requests.status IN ($memberStatus)) as request_id")
             ->with('sports_disciplines')
             ->with('members')
             ->with('manager')
             ->with('teams')
-            ->leftJoin('member_requests', function ($join) use ($tableName, $id) {
-                $join->on("$tableName.id", '=', 'member_requests.club_id')
-                    ->where('member_requests.member_id', '=', $id)
-                    ->whereIn('member_requests.status', [MemberRequest::NEW, MemberRequest::APPROVE]);
-            })
             ->where("$tableName.status", Club::ACTIVE)
             ->where('manager_id', '!=', $id);
 
