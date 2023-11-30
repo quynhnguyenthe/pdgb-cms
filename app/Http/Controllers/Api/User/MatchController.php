@@ -267,7 +267,7 @@ class MatchController extends Controller
         $user = Auth::guard('google-member')->user();
 
         $match_id = $request->get('match_id');
-        $matchResult = DB::table('match_results')->where('match_id', $match_id)->get();
+        $matchResult = $this->matchResultRepository->getModel()->where('match_id', $match_id)->get()->toArray();
         if (!empty($matchResult)) {
             return response()->json(['error' => 'Trận đấu đã được cập nhật kết quả'], 422);
         }
