@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\ChallengeClub;
 use App\Models\Matches;
 
 class MatchRepository extends Repository
@@ -23,7 +24,7 @@ class MatchRepository extends Repository
     {
         $tableName = $this->getModel()->getTable();
         return $this->getModel()
-            ->select('matches.*')
+            ->select('matches.*', 'challenge_clubs.status as challenge_status')
             ->join('challenge_clubs', 'challenge_clubs.match_id', '=', "$tableName.id")
             ->with('sports_discipline')
             ->with('creator_member')
@@ -32,7 +33,7 @@ class MatchRepository extends Repository
             ->with('team_twos')
             ->with('result')
             ->where('challenge_clubs.club_id', $club_id)
-            ->groupBy('matches.id')
+            ->where('challenge_clubs.status', ChallengeClub::NEW)
             ->orderBy('matches.id', 'DESC')
             ->get();
     }
