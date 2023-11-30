@@ -174,9 +174,13 @@ class MatchController extends Controller
         }
         $user = Auth::guard('google-member')->user();
         $clubMember = $this->clubMemberRepository->getClubByMember($user->id);
-        $checkMatch = $this->matchRepository->checkMatchWithClub($clubMember['club_id'], $match_id);
-        if (!$checkMatch) {
+
+        $checkChallenge = $this->challengeClubRepository->getPKWithMatchAndClub($match_id, $clubMember['club_id']);
+        if (!$checkChallenge) {
             return response()->json(['error' => 'CLB của bạn không có vé mời tham dự trận đấu này'], 422);
+        }
+        if ($checkChallenge['status'] != ChallengeClub::NEW) {
+            return response()->json(['error' => 'Bạn đã xử lý lời thách đấu này'], 422);
         }
 
         $listMemberIds = $request->get('member_ids') ?? [];

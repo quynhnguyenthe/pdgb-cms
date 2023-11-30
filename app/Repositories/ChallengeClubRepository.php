@@ -35,4 +35,12 @@ class ChallengeClubRepository extends Repository
             ->where('match_id', $match_id)
             ->get();
     }
+
+    public function getPKWithMatchAndClub(int $match_id, int $club_id)
+    {
+        return $this->getModel()
+            ->where('match_id', $match_id)
+            ->where('club_id', $club_id)
+            ->first();
+    }
 }
