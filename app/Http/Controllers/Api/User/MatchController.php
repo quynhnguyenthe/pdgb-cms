@@ -306,6 +306,7 @@ class MatchController extends Controller
                 'win_team_id' => $winTeam,
                 'lose_team_id' => $loseTeam,
                 'result' => $request->get('result'),
+                'status' => 1
             ];
             $matchResultModel = new MatchResult();
             $matchResultModel->fill($dataMatchResult);
