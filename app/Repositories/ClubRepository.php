@@ -84,9 +84,9 @@ class ClubRepository extends Repository
         $club = $this->getModel()
             ->select("$tableName.*")
             ->selectRaw("(SELECT status FROM member_requests WHERE $tableName.id = member_requests.club_id 
-            AND member_requests.member_id=$id AND member_requests.status IN ($memberStatus)) as request_join_status")
+            AND member_requests.member_id=$id AND member_requests.status IN ($memberStatus) ORDER BY id LIMIT 1) as request_join_status")
             ->selectRaw("(SELECT id FROM member_requests WHERE $tableName.id = member_requests.club_id 
-            AND member_requests.member_id=$id AND member_requests.status IN ($memberStatus)) as request_id")
+            AND member_requests.member_id=$id AND member_requests.status IN ($memberStatus) ORDER BY id LIMIT 1) as request_id")
             ->with('sports_disciplines')
             ->with('members')
             ->with('manager')
