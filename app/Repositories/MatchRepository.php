@@ -65,6 +65,7 @@ class MatchRepository extends Repository
             ->where('matches.creator_member_id', $user_id)
             ->orWhere('team_matches.member_id', $user_id)
             ->orderBy('matches.id', 'DESC')
+            ->groupBy('matches.id')
             ->get();
     }
 
