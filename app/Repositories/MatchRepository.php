@@ -62,6 +62,7 @@ class MatchRepository extends Repository
             ->with('challenge_clubs')
             ->with('result')
             ->where('matches.creator_member_id', $user_id)
+            ->orWhere('team_ones.member_id', $user_id)
             ->orderBy('matches.id', 'DESC')
             ->get();
     }
