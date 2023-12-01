@@ -136,8 +136,10 @@ class MatchRepository extends Repository
             $user_id = $otherUserId;
             $qb->where('matches.type', Matches::PUBLIC);
         }
-        $qb->where('matches.creator_member_id', $user_id)
-            ->orWhere('team_matches.member_id', $user_id);
+        $qb->where(function ($query) use ($user_id){
+            $query->where('matches.creator_member_id', $user_id)
+                ->orWhere('team_matches.member_id', $user_id);
+        });
         $qb->whereIn('matches.status', [Matches::STATUS_ACCEPTED, Matches::STATUS_IN_DUE,Matches::WAIT_RESULT,Matches::STATUS_DONE]);
         $qb->orderBy('matches.id', 'DESC');
         $qb->groupBy('matches.id');
