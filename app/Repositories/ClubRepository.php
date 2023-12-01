@@ -43,7 +43,7 @@ class ClubRepository extends Repository
             ->with('manager')
             ->with(['sports_disciplines' => function ($query) use ($club_id) {
                 $query->selectRaw('sports_disciplines.id,sports_disciplines.name')
-                    ->selectRaw("(SELECT COUNT(1) FROM member_sports_discipline msd 
+                    ->selectRaw("(SELECT COUNT(1) FROM member_sports_discipline msd
                     WHERE msd.sports_discipline_id = sports_disciplines.id
                     AND msd.member_id IN (SELECT member_id FROM club_member WHERE club_id = $club_id)
                     ) as number_of_members");
@@ -83,10 +83,10 @@ class ClubRepository extends Repository
         $memberStatus = implode(",", $memberStatus);
         $club = $this->getModel()
             ->select("$tableName.*")
-            ->selectRaw("(SELECT status FROM member_requests WHERE $tableName.id = member_requests.club_id 
-            AND member_requests.member_id=$id AND member_requests.status IN ($memberStatus) ORDER BY id LIMIT 1) as request_join_status")
-            ->selectRaw("(SELECT id FROM member_requests WHERE $tableName.id = member_requests.club_id 
-            AND member_requests.member_id=$id AND member_requests.status IN ($memberStatus) ORDER BY id LIMIT 1) as request_id")
+            ->selectRaw("(SELECT status FROM member_requests WHERE $tableName.id = member_requests.club_id
+            AND member_requests.member_id=$id AND member_requests.status IN ($memberStatus) ORDER BY id DESC LIMIT 1) as request_join_status")
+            ->selectRaw("(SELECT id FROM member_requests WHERE $tableName.id = member_requests.club_id
+            AND member_requests.member_id=$id AND member_requests.status IN ($memberStatus) ORDER BY id DESC LIMIT 1) as request_id")
             ->with('sports_disciplines')
             ->with('members')
             ->with('manager')
