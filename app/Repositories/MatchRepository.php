@@ -111,7 +111,7 @@ class MatchRepository extends Repository
             ->with('team_twos')
             ->with('result')
             ->where('team_matches.member_id', $user_id)
-            ->where('matches.status', Matches::WAIT_RESULT)
+            ->whereIn('matches.status', [Matches::WAIT_RESULT, Matches::STATUS_DONE])
             ->groupBy('matches.id')
             ->orderBy('matches.id', 'DESC')
             ->get();
