@@ -140,6 +140,8 @@ class MemberRequestController extends Controller
         if ($requestJoin && $requestJoin['status'] == MemberRequest::NEW) {
             $clubMember = $this->clubMemberRepository->checkExistsClubWithMember($requestJoin['member_id']);
             if ($clubMember) {
+                $dataRequestJoin['status'] = MemberRequest::CANCEL;
+                $this->memberRequestsRepository->update($requestJoin, $dataRequestJoin);
                 return response()->json(['error' => 'Thành viên xin gia nhập đã tham gia vào 1 clb khác'], 422);
             }
             $club = $this->clubRepository->getById($requestJoin['club_id'])->toArray();
@@ -147,7 +149,7 @@ class MemberRequestController extends Controller
                 return response()->json(['error' => 'Bạn không phải chủ club'], 422);
             }
             if ($club['members_count'] >= $club['number_of_members']) {
-                $dataRequestJoin['status'] = $requestStatus;
+                $dataRequestJoin['status'] = MemberRequest::REJECT;
                 $this->memberRequestsRepository->update($requestJoin, $dataRequestJoin);
                 return response()->json(['error' => 'Số lượng thành viên đã đạt giới hạn tối đa'], 422);
             }
